@@ -51,8 +51,8 @@ if(isset($_SESSION['usuario']))
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="../index.php">Universidad<span class="logo_colour"> Andrés Bello</span></a></h1>
-          <h2>Herramienta de programación de horarios.</h2>
+          <h1><a href="../index.php">Universidad<span class="logo_colour"> Andr&eacutes Bello</span></a></h1>
+          <h2>Herramienta de programaci&oacuten de horarios.</h2>
         </div>
       </div>
       <div id="menubar">
@@ -75,9 +75,8 @@ if(isset($_SESSION['usuario']))
     </div>
 	
       <div id="content">
-        <!-- insert the page content here -->
+        <!--Inicio Campo Agregar-->
         <h2>Agregar Laboratorio:</h2>
-		<?php if(isset($answer)) echo '<span class="error">'.$answer.'</span>';?>
 		<table>
         <form method="post" name="agregar" target="_self">
           <tr><td>Edificio</td><td>Nro. Sala</td></tr>
@@ -91,21 +90,13 @@ if(isset($_SESSION['usuario']))
 		  
         </form>
         </table>
-		
-		<h2>Lista de laboratorios:</h2><ul>
-          
-		<form method="post" name="listar" target="_self">
-		<?php
-		$usuario->listarLaboratorio();
-		?>
-        </form>        
-        </ul>
-		
+		<!--Fin Campo Agregar-->
+		<!--Inicio Campo Modificar-->
 		<?php
 		if(isset($_POST['modifica']))
 		{
-		$dato1=$usuario->obtenerEdificioLab($_POST['modifica']);
-		$dato2=$usuario->obtenerSalaLab($_POST['modifica']);
+		$dato=$_POST['modifica'];
+
 		
 		  if($_POST['modifica'] == 'Modificar laboratorio')
 			{
@@ -116,9 +107,9 @@ if(isset($_SESSION['usuario']))
 			else
 			{
 			if($_POST['edificio2'] == '')
-			$edificioerror2 = '*Debe ingresar el edificio con el formato correcto, ejemplo: R3';
+			$edificioerror2 = '*Debe ingresar el edificio con el formato correcto, ejemplo: R3 <br>';
 			if($_POST['sala2'] == '')
-			$salaerror2 = '*Debe ingresar una sala.';
+			$salaerror2 = '*Debe ingresar una sala. <br>';
     }
   } else {
 		
@@ -127,21 +118,30 @@ if(isset($_SESSION['usuario']))
 			<table>
 			<form method="post" name="modificar" target="_self">
 			<tr><td>ID</td><td>Edificio</td><td>Nro. Sala</td></tr>
-			<tr><td><input type="hidden" name="id2" value="<?php echo $_POST['modifica']; ?>"><?php echo $_POST['modifica']; ?></input></td>
-			<td><input type="text" name="edificio2" value="<?php echo $dato1; ?>" maxlength="3" class="xl"></input></td>
-			<td><input type="text" name="sala2" value="<?php echo $dato2; ?>" maxlength="3"></input></td>
-			<td><input id="btt" type="submit" name="modifica" value="Modificar laboratorio"></input></td></tr>
-		  
-          <tr><td><?php if(isset($edificioerror2)) echo '<span class="error">'.$edificioerror2.'</span>';?></td>
-              <td><?php if(isset($salaerror2)) echo '<span class="error">'.$salaerror2.'</span>';?></td>
-          </tr>
-		  
+			<tr><td><input type="hidden" name="id2" value="<?php echo $dato; ?>"><?php echo $_POST['modifica']; ?></input></td>
+			<td><input type="text" name="edificio2" value="<?php $usuario->obtenerEdificioLab($dato); ?>" maxlength="3" class="xl"></input></td>
+			<td><input type="text" name="sala2" value="<?php $usuario->obtenerSalaLab($dato); ?>" maxlength="3"></input></td>
+			<td><input id="btt" type="submit" name="modifica" value="Modificar laboratorio"></input></td></tr>		  
         </form>
         </table>
 		<?php
 		}
 		}
 		?>
+		<!--Fin Campo Modificar-->
+		<?php if(isset($edificioerror2)) echo '<span class="error">'.$edificioerror2.'</span>';?>
+        <?php if(isset($salaerror2)) echo '<span class="error">'.$salaerror2.'</span>';?>
+		<?php if(isset($answer)) echo '<span class="error">'.$answer.'</span>';?>
+		<!--Inicio Campo Listar-->
+		<h2>Lista de laboratorios:</h2><ul>
+          
+		<form method="post" name="listar" target="_self">
+		<?php
+		$usuario->listarLaboratorio();
+		?>
+        </form>        
+        </ul>
+		<!--Fin Campo Listar-->
 		
 </html>
 

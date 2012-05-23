@@ -51,8 +51,8 @@ if(isset($_SESSION['usuario']))
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="../index.php">Universidad<span class="logo_colour"> Andrés Bello</span></a></h1>
-          <h2>Herramienta de programación de horarios.</h2>
+          <h1><a href="../index.php">Universidad<span class="logo_colour"> Andr&eacutes Bello</span></a></h1>
+          <h2>Herramienta de programaci&oacuten de horarios.</h2>
         </div>
       </div>
       <div id="menubar">
@@ -73,12 +73,12 @@ if(isset($_SESSION['usuario']))
       <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
       </div>
       <div id="content">
-
+	<!--Inicio Campo Agregar-->
 	  <h2>Agregar Software:</h2>
-		<?php if(isset($answer)) echo '<span class="error">'.$answer.'</span>';?>
+		
 		<table>
         <form method="post" name="agregar" target="_self">
-          <tr><td>Nombre de software</td><td>Version</td></tr>
+          <tr><td>Nombre de software</td><td>Versi&oacuten</td></tr>
           <tr><td><input type="text" name="nombre" value="" maxlength="30" class="xl"></input></td>
           <td><input type="text" name="version" value="" maxlength="30"></input></td>
           <td><input id="btt" type="submit" name="agrega" value="Agregar software"></input></td></tr>
@@ -89,23 +89,12 @@ if(isset($_SESSION['usuario']))
 		  
         </form>
         </table>
-	  
-	  <h2>Lista de software:</h2><ul>
-	  
-	  <form method="post" name="listar" target="_self">
-		<?php
-		$usuario->listarSoftware();
-		?>
-        </form>
-		
-        </ul>
-		
-				<?php
+	  <!--Fin Campo Agregar-->
+	  <!--Inicio Campo Modificar-->
+	  <?php
 		if(isset($_POST['modifica']))
 		{
-		$dato1='';
-		$dato2='';
-		
+		$dato=$_POST['modifica'];		
 		  if($_POST['modifica'] == 'Modificar software')
 			{
 			if(isset($_POST['nombre2']) && $_POST['nombre2'] != '' && $_POST['version2'] != '')
@@ -115,9 +104,9 @@ if(isset($_SESSION['usuario']))
 			else
 			{
 			if($_POST['nombre2'] == '')
-			$edificioerror2 = '*Debe ingresar el nombre';
+			$edificioerror2 = '*Debe ingresar el nombre <br>';
 			if($_POST['version2'] == '')
-			$salaerror2 = '*Debe ingresar la version.';
+			$salaerror2 = '*Debe ingresar la version. <br>';
     }
   } else {
 		
@@ -125,23 +114,33 @@ if(isset($_SESSION['usuario']))
 			<h2>Modificar Software:</h2>
 			<table>
 			<form method="post" name="modificar" target="_self">
-			<tr><td>ID</td><td>Nombre de software</td><td>Version</td></tr>
-			<tr><td><input type="hidden" name="id2" value="<?php echo $_POST['modifica']; ?>"><?php echo $_POST['modifica']; ?></input></td>
-			<td><input type="text" name="nombre2" value="<?php echo $dato1; ?>" maxlength="30" class="xl"></input></td>
-			<td><input type="text" name="version2" value="<?php echo $dato2; ?>" maxlength="30"></input></td>
+			<tr><td>ID</td><td>Nombre de software</td><td>Versi&oacuten</td></tr>
+			<tr><td><input type="hidden" name="id2" value="<?php echo $dato; ?>"><?php echo $_POST['modifica']; ?></input></td>
+			<td><input type="text" name="nombre2" value="<?php $usuario->obtenerNombreSw($dato); ?>" maxlength="30" class="xl"></input></td>
+			<td><input type="text" name="version2" value="<?php $usuario->obtenerVersionSw($dato); ?>" maxlength="30"></input></td>
 			<td><input id="btt" type="submit" name="modifica" value="Modificar software"></input></td></tr>
-		  
-          <tr><td><?php if(isset($edificioerror2)) echo '<span class="error">'.$edificioerror2.'</span>';?></td>
-              <td><?php if(isset($salaerror2)) echo '<span class="error">'.$salaerror2.'</span>';?></td>
-          </tr>
-		  
         </form>
         </table>
 		<?php
 		}
 		}
 		?>
+	  <!--Fin Campo Modificar-->	  		  
+      <?php if(isset($edificioerror2)) echo '<span class="error">'.$edificioerror2.'</span>';?>
+      <?php if(isset($salaerror2)) echo '<span class="error">'.$salaerror2.'</span>';?> 
+	  <?php if(isset($answer)) echo '<span class="error">'.$answer.'</span>';?>
+	  <!--Inicio Campo Listar-->
+	  <h2>Lista de software:</h2><ul>
+	  
+	  <form method="post" name="listar" target="_self">
+		<?php
+		$usuario->listarSoftware();
+		?>
+        </form>
 		
+        </ul>
+		<!--Fin Campo Listar-->
+					
 	  
       </div>
     </div>
