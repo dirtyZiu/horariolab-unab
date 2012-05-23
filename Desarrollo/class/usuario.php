@@ -1242,8 +1242,19 @@ class JefeDeLaboratorio extends usuario {
 	$sql = "SELECT sala FROM laboratorio WHERE id_lab='{$idLab}';";
 	$res = $mysqli->prepare($sql);
     $res->execute();
-    $res->bind_result($sala);
-	return $sala;
+    $res->bind_result($dato);
+		$flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      	echo $dato;
+    }
+    if($flag == 0)
+      echo '';
+    else
+      echo '';
+    $res->free_result();
 	}
 	public function obtenerEdificioLab($idLab) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
@@ -1251,8 +1262,19 @@ class JefeDeLaboratorio extends usuario {
 	$sql = "SELECT edificio FROM laboratorio WHERE id_lab='{$idLab}';";
 	$res = $mysqli->prepare($sql);
     $res->execute();
-    $res->bind_result($edificio);
-	return $edificio;
+    $res->bind_result($dato);
+	$flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      	echo $dato;
+    }
+    if($flag == 0)
+      echo '';
+    else
+      echo '';
+    $res->free_result();
 	}
   
   public function crearSoftware($nomSoftware,$verSoftware) {
@@ -1307,7 +1329,7 @@ class JefeDeLaboratorio extends usuario {
     $res = $mysqli->prepare($sql);
     $res->execute();
     $res->bind_result($id,$nombre,$version);
-    echo '<table><tr><td>ID</td><td>Nombre Software</td><td>Version</td><td>Modificar</td><td>Eliminar</td></tr>';
+    echo '<table><tr><td>ID</td><td>Nombre Software</td><td>Versión</td><td>Modificar</td><td>Eliminar</td></tr>';
     $flag = 0;
     while($res->fetch())
     {
@@ -1322,6 +1344,125 @@ class JefeDeLaboratorio extends usuario {
     $res->free_result();
   }
   
+  	public function obtenerNombreSw($idSw) {
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+	$sql = "SELECT nom_sw FROM software WHERE id_sw='{$idSw}';";
+	$res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($dato);
+	$flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      	echo $dato;
+    }
+    if($flag == 0)
+      echo '';
+    else
+      echo '';
+    $res->free_result();
+	}
+    	public function obtenerVersionSw($idSw) {
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+	$sql = "SELECT version FROM software WHERE id_sw='{$idSw}';";
+	$res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($dato);
+	$flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      	echo $dato;
+    }
+    if($flag == 0)
+      echo '';
+    else
+      echo '';
+    $res->free_result();
+	}
+	public function listarAsignaturasUsanLab(){
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+	$sql="SELECT s.NRC, r.Codigo, s.Numero_Seccion, r.Nombre, s.Id FROM clase AS c, clase_usa_lab AS l, ramo AS r, seccion AS s WHERE c.Id = l.Id AND c.Seccion_Id = s.Id AND s.Codigo_Ramo = r.Codigo ORDER BY s.Numero_Seccion";
+	$res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($nrc,$codigo,$seccion,$nombre,$idSeccion);
+    echo '<table><tr><td>NRC</td><td>Código</td><td>Sección</td><td>Nombre</td><td>Teoría</td><td>Ayudantía</td><td>Laboratorio</td><td>Taller</td><td>Asignar Software</td><td>Asignar Disponibilidad</td></tr>';
+    $flag = 0;
+	$teoria = 'Teoria';
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      echo '<tr><td>'.$nrc.'</td><td>'.$codigo.'</td><td>'.$seccion.'</td><td>'.$nombre.'</td><td>'.$teoria/*$this->tipoClaseConsulta($idSeccion,$teoria)*/.'</td><td>Ayudantia</td><td>Laboratorio</td><td>Taller</td><td>Software</td><td>Disponibilidad</td></tr>';
+    }
+    if($flag == 0)
+      echo '<tr><td>No hay datos.</td><td></td><td></td></tr></table>';
+    else
+      echo '</table>';
+    $res->free_result();
+	}
+	public function tipoClaseConsulta($idSec, $tipoClase){
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+	$sql="SELECT c.Id FROM clase AS c,  seccion AS s WHERE c.Seccion_Id = s.Id AND s.Id = '{$idSec}' AND c.Clase_Tipo = '{$tipoClase}' GROUP BY c.Clase_Tipo";
+	$res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($idC);
+    $flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      return 'Existe';
+    }
+    if($flag == 0)
+      return 'No Aplica';
+
+    $res->free_result();
+	}
 }
+/*
+  public function agregarAsigNrc($varNRC) {
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+	$sql = "SELECT Id FROM seccion WHERE NRC='{$varNRC}';";	
+	$res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($id);
+    $flag = 0;
+	$count = 0;
+	$dato = '';
+    while($res->fetch())
+    {
+	$count = $count + 0;
+	$dato = $id;
+      if($flag == 0)
+        $flag = 1;
+    }
+    if($flag == 0)
+      $answer = '* Asignatura no encontrada.';
+    elseif($count > 1)
+      $answer = '* Más de un resultado encontrado, comuniquese con el administrador.';
+	else{
+    $res->free_result();
+	$sql2 = "INSERT INTO `clase_usa_lab`(`Id`) VALUES ('{$dato}')";
+	if(($mysqli->query($sql2)) == true)
+    {
+      $answer = '*Software agregado.';
+    }
+    else
+    {
+      $answer = '*Software no agregado.';
+    }
+    }
+    return $answer;
+	}
+	*/
+
 
 ?>
