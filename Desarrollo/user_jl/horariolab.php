@@ -16,8 +16,8 @@
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="../index.php">Universidad<span class="logo_colour"> Andrés Bello</span></a></h1>
-          <h2>Herramienta de programación de horarios.</h2>
+          <h1><a href="../index.php">Universidad<span class="logo_colour"> Andr&eacutes Bello</span></a></h1>
+          <h2>Herramienta de programaci&oacuten de horarios.</h2>
         </div>
       </div>
       <div id="menubar">
@@ -39,7 +39,7 @@
       </div>
       <div id="content">
         <!-- insert the page content here -->
-        <h1>En Construcción (Modulo generación de Horarios)</h1>
+        <h1>En Construcci&oacuten (Modulo generaci&oacuten de Horarios)</h1>
       </div>
     </div>
     <div id="content_footer"></div>
