@@ -11,30 +11,26 @@ if(isset($_SESSION['usuario']))
     $_SESSION['usuario'] = serialize($usuario);
   }    
 
-  if(isset($_POST['agrega']) && $_POST['agrega'] == 'Agregar por NRC')
+    if(isset($_POST['agrega']) && $_POST['agrega'] == 'Agregar')
   {
-	if(isset($_POST['nrc']) && $_POST['nrc'] != '')
+	if(isset($_POST['codigo']) && $_POST['codigo'] != '')
     {
-     $answer = '1';
-    }
-    else
-    {
-     $nrcerror = '*Debe ingresar un NRC';
-	 }
-  }
-    if(isset($_POST['agrega']) && $_POST['agrega'] == 'Agregar por codigo')
-  {
-	if(isset($_POST['codigo']) && $_POST['codigo'] != '' && $_POST['seccion'] != '')
-    {
-     $answer = '2';
+	if(isset($_POST['teoria'])) $teo = 'si'; else $teo = 'no';
+	if(isset($_POST['ayudantia'])) $ayu = 'si'; else $ayu = 'no';
+	if(isset($_POST['laboratorio'])) $lab = 'si'; else $lab = 'no';
+	if(isset($_POST['taller'])) $tal = 'si'; else $tal = 'no';
+     $answer = $usuario->agregarAsigCodigo($_POST['codigo'],$teo,$ayu,$lab,$tal);
     }
     else
     {
       if($_POST['codigo'] == '')
         $codigoerror = '*Debe ingresar el codigo de la asignatura';
-      if($_POST['seccion'] == '')
-        $seccionerror = '*Debe ingresar una seccion.';
     }
+  }
+  
+        if(isset($_POST['elimina'])&& $_POST['elimina'] == 'Eliminar')
+  {
+	$answer = $usuario->eliminarRamoLab($_POST['datoCodigo']);
   }
 
 
@@ -78,6 +74,7 @@ if(isset($_SESSION['usuario']))
     </div>
     <div id="site_content">
       <div id="content">
+	  	<?php if(isset($answer)) echo '<span class="error">'.$answer.'</span>';?>
         <!-- Inicio Campo Listar -->
         <h1>Lista de Asignaturas que usan Laboratorio</h1>
 		<?php
@@ -86,30 +83,19 @@ if(isset($_SESSION['usuario']))
 		<!-- Fin Campo Listar -->
 		
 		<!-- Inicio Campo Añadir -->
-		<!-- Se deben agregar 2 formularios, uno para agregar por codigo de asignatura + seccion, otro solo con NRC, si existe mas de un resultado mostrar error. si existe, automaticamente asignar laboratorio en todos sus campos. -->
 		<h1>A&ntildeadir Asignaturas que usan Laboratorio</h1>
-		<?php if(isset($answer)) echo '<span class="error">'.$answer.'</span>';?>
-		<!-- por NRC -->
-		<h2>Agregar por NRC:</h2>
 		<table>
         <form method="post" name="agregar" target="_self">
-          <tr><td>NRC</td></tr>
-          <tr><td><input type="text" name="nrc" value="" maxlength="11" class="xl"></input></td>
-          <td><input id="btt" type="submit" name="agrega" value="Agregar por NRC"></input></td></tr>		  
-          <tr><td><?php if(isset($nrcerror)) echo '<span class="error">'.$nrcerror.'</span>';?></td>
-          </tr>		  
-        </form>
-        </table>
-		<!-- por codigo asignatura y seccion -->
-		<h2>Agregar por C&oacutedigo de Asignatura y Secci&oacuten: </h2>
-		<table>
-        <form method="post" name="agregar" target="_self">
-          <tr><td>C&oacutedigo Asignatura</td><td>Secci&oacuten </td></tr>
-          <tr><td><input type="text" name="codigo" value="" maxlength="11" class="xl"></input></td>
-          <td><input type="text" name="seccion" value="" maxlength="3"></input></td>
-          <td><input id="btt" type="submit" name="agrega" value="Agregar por codigo"></input></td></tr>		  
+          <tr><td>C&oacutedigo</td><td>Teor&iacutea</td><td>Ayudant&iacutea</td><td>Laboratorio</td><td>Taller</td></tr>
+          <tr>
+		  <td><input type="text" name="codigo" value="" maxlength="11" class="xl"></input></td>
+		  <td><input type="checkbox" name="teoria" value="si"> usa lab </input></td>
+		  <td><input type="checkbox" name="ayudantia" value="si"> usa lab </input></td>
+		  <td><input type="checkbox" name="laboratorio" value="si"> usa lab </input></td>
+		  <td><input type="checkbox" name="taller" value="si"> usa lab </input></td>
+          <td><input id="btt" type="submit" name="agrega" value="Agregar"></input></td>
+		  </tr>		  
           <tr><td><?php if(isset($codigoerror)) echo '<span class="error">'.$codigoerror.'</span>';?></td>
-              <td><?php if(isset($seccionerror)) echo '<span class="error">'.$seccionerror.'</span>';?></td>
           </tr>		  
         </form>
         </table>

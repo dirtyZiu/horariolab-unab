@@ -1387,82 +1387,108 @@ class JefeDeLaboratorio extends usuario {
 	public function listarAsignaturasUsanLab(){
 	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-	$sql="SELECT s.NRC, r.Codigo, s.Numero_Seccion, r.Nombre, s.Id FROM clase AS c, clase_usa_lab AS l, ramo AS r, seccion AS s WHERE c.Id = l.Id AND c.Seccion_Id = s.Id AND s.Codigo_Ramo = r.Codigo ORDER BY s.Numero_Seccion";
+	$sql = "SELECT rul.codigo, r.nombre, rul.teoria, rul.ayudantia, rul.laboratorio, rul.taller FROM ramo AS r, ramo_usa_lab AS rul WHERE r.codigo = rul.codigo ORDER BY r.codigo";
 	$res = $mysqli->prepare($sql);
     $res->execute();
-    $res->bind_result($nrc,$codigo,$seccion,$nombre,$idSeccion);
-    echo '<table><tr><td>NRC</td><td>Código</td><td>Sección</td><td>Nombre</td><td>Teoría</td><td>Ayudantía</td><td>Laboratorio</td><td>Taller</td><td>Asignar Software</td><td>Asignar Disponibilidad</td></tr>';
-    $flag = 0;
-	$teoria = 'Teoria';
+    $res->bind_result($codigo,$nombre,$teo,$ayu,$lab,$tal);
+  //echo '<table><tr><td>Código</td><td>Nombre</td><td>Teoría</td><td>Ayudantía</td><td>Laboratorio</td><td>Taller</td><td>Modificar</td><td>Eliminar</td></tr>';
+    echo '<table><tr><td>Código</td><td>Nombre</td><td>Teo</td><td>Ayu</td><td>Lab</td><td>Tal</td><td>Modificar</td><td>Eliminar</td></tr>';
+	$flag = 0;
     while($res->fetch())
     {
       if($flag == 0)
         $flag = 1;
-      echo '<tr><td>'.$nrc.'</td><td>'.$codigo.'</td><td>'.$seccion.'</td><td>'.$nombre.'</td><td>'.$teoria/*$this->tipoClaseConsulta($idSeccion,$teoria)*/.'</td><td>Ayudantia</td><td>Laboratorio</td><td>Taller</td><td>Software</td><td>Disponibilidad</td></tr>';
-    }
+	  echo '<form method="post" name="modificar" target="_self"><input type="hidden" name="datoCodigo" value='.$codigo.' />';
+      echo '<tr><td>'.$codigo.'</td><td>'.$nombre.'</td><td>'.$teo.'</td><td>'.$ayu.'</td><td>'.$lab.'</td><td>'.$tal.'</td><td><input type="submit" name="modifica" value="Modificar" /></td><td><input type="submit" name="elimina" value="Eliminar" /></td></tr>';
+	  echo '</form>';
+	  }
     if($flag == 0)
       echo '<tr><td>No hay datos.</td><td></td><td></td></tr></table>';
     else
       echo '</table>';
     $res->free_result();
 	}
-	public function tipoClaseConsulta($idSec, $tipoClase){
+	public function verificadorRamo($vCodigo){
 	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-	$sql="SELECT c.Id FROM clase AS c,  seccion AS s WHERE c.Seccion_Id = s.Id AND s.Id = '{$idSec}' AND c.Clase_Tipo = '{$tipoClase}' GROUP BY c.Clase_Tipo";
+	$sql = "SELECT teoria, ayudantia, laboratorio, taller FROM ramo WHERE Codigo = '{$vCodigo}' LIMIT 0,1";
 	$res = $mysqli->prepare($sql);
     $res->execute();
-    $res->bind_result($idC);
+    $res->bind_result($nTeo,$nAyu,$nLab,$nTal);
     $flag = 0;
-    while($res->fetch())
+	$cambios = '';
+    if($res->fetch() == true)
     {
+	$res->free_result();
       if($flag == 0)
         $flag = 1;
-      return 'Existe';
+	  if($nTeo == 0)
+	  {
+	  if ($mysqli->query("UPDATE ramo_usa_lab SET teoria='' WHERE codigo='{$vCodigo}'") === TRUE)
+		$cambios = $cambios . '<br> *Ramo sin Teoria.';
+	  }
+	  if($nAyu == 0)
+	  {
+	  if ($mysqli->query("UPDATE ramo_usa_lab SET ayudantia='' WHERE codigo='{$vCodigo}'") === TRUE)
+		$cambios = $cambios . '<br> *Ramo sin Ayudantia.';
+	  }
+	  if($nLab == 0)
+	  {
+	  if ($mysqli->query("UPDATE ramo_usa_lab SET laboratorio='' WHERE codigo='{$vCodigo}'") === TRUE)
+		$cambios = $cambios . '<br> *Ramo sin Laboratorio.';
+	  }
+	  if($nTal == 0)
+	  {
+	  if ($mysqli->query("UPDATE ramo_usa_lab SET taller='' WHERE codigo='{$vCodigo}'") === TRUE)
+		$cambios = $cambios . '<br> *Ramo sin Taller.';
+	  }
+	  return '*Asignatura agregada.' . $cambios; 
     }
     if($flag == 0)
-      return 'No Aplica';
+      return 'Error: Código no encontrado.';
 
-    $res->free_result();
 	}
-}
-/*
-  public function agregarAsigNrc($varNRC) {
-    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+	
+	public function agregarAsigCodigo($varCodigo,$varTeo,$varAyu,$varLab,$varTal){
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-	$sql = "SELECT Id FROM seccion WHERE NRC='{$varNRC}';";	
-	$res = $mysqli->prepare($sql);
-    $res->execute();
-    $res->bind_result($id);
-    $flag = 0;
-	$count = 0;
-	$dato = '';
-    while($res->fetch())
+    $sql = "SELECT codigo FROM `ramo` WHERE codigo='{$varCodigo}'";
+	$mysqli->query($sql);
+    if($mysqli->affected_rows != 0)
     {
-	$count = $count + 0;
-	$dato = $id;
-      if($flag == 0)
-        $flag = 1;
-    }
-    if($flag == 0)
-      $answer = '* Asignatura no encontrada.';
-    elseif($count > 1)
-      $answer = '* Más de un resultado encontrado, comuniquese con el administrador.';
-	else{
-    $res->free_result();
-	$sql2 = "INSERT INTO `clase_usa_lab`(`Id`) VALUES ('{$dato}')";
-	if(($mysqli->query($sql2)) == true)
-    {
-      $answer = '*Software agregado.';
+	$sql = "INSERT INTO ramo_usa_lab(codigo,teoria,ayudantia,laboratorio,taller) VALUES ('{$varCodigo}','{$varTeo}','{$varAyu}','{$varLab}','{$varTal}');";
+	if($mysqli->query($sql) == true)
+	{
+	$answer = $this->verificadorRamo($varCodigo);
+	}
+	else
+	{
+	$answer = '*Asignatura no agregada.';
+	}
+	
     }
     else
     {
-      $answer = '*Software no agregado.';
-    }
+      $answer = '*Codigo no existe.';
     }
     return $answer;
 	}
-	*/
-
+	
+	public function eliminarRamoLab($varCodigo) { 
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "DELETE FROM ramo_usa_lab WHERE codigo = '{$varCodigo}';";
+	if(($mysqli->query($sql)) == true)
+    {
+      $answer = '*Asignatura borrada.';
+    }
+    else
+    {
+      $answer = '*Asignatura no borrada.';
+    }
+    return $answer;
+	}
+	
+}
 
 ?>
