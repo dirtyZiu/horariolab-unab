@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 foreach (glob("../class/*.php") as $filename) {
    include_once($filename);
 }
@@ -18,7 +18,10 @@ if(isset($_SESSION['usuario']))
     {
       if($_POST['tipo'] != '' && $_POST['abreviacion'] != '')
       {
-        $msg = $usuario->crearTipoDeRamo($_POST['tipo'],$_POST['abreviacion']);
+	    if(isset($_POST['soloDepto']))
+		  $msg = $usuario->crearTipoDeRamo($_POST['tipo'],$_POST['abreviacion'],true);
+		else
+          $msg = $usuario->crearTipoDeRamo($_POST['tipo'],$_POST['abreviacion'],false);
       }
       else
       {
@@ -33,7 +36,7 @@ if(isset($_SESSION['usuario']))
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
@@ -55,6 +58,7 @@ if(isset($_SESSION['usuario']))
         <ul id="menu">
           <li><a href="depto.php">Ramos</a></li>
           <li><a href="seccion.php">Secciones</a></li>
+		  <li><a href="horario.php">Horario</a></li>
           <li class="selected"><a href="tipos.php">Tipos</a></li>
           <li><a href="../logout.php">Logout</a></li>
         </ul>
@@ -69,10 +73,11 @@ if(isset($_SESSION['usuario']))
             echo '<span class="error">'.$msg.'</span>';
         ?>
         <table>
-        <tr><td>Tipo</td><td>Abreviación</td></tr> 
+        <tr><td>Tipo</td><td>Abreviación</td><td>Solo depto?</td></tr> 
         <form method="post" name="agregar" target="_self">
             <tr><td><input type="text" name="tipo" value="<?php if(isset($tipoold)) echo $tipoold;?>" maxlength="50"></input></td>
             <td><input type="text" name="abreviacion" value="<?php if(isset($abrevold)) echo $abrevold;?>" maxlength="3" class="xs" onkeyup="buscarAbreviacion(this.value)"></input></td>
+			<td><input type="checkbox" name="soloDepto"> Departamento</input></td>
             <td><?php if(isset($codigoold))echo '<input type="submit" name="submit" value="Agregar tipo" id="btt">'; else echo '<input type="submit" name="submit" value="Agregar tipo" id="btt" disabled>';?></input></td></tr>
             <tr><td><div id="existe"><td><?php if(isset($tipoerror)) echo '<span class="error">'.$tipoerror.'</span>';?></td></div>
                 <td><?php if(isset($abreverror)) echo '<span class="error">'.$abreverror.'</span>';?></td>

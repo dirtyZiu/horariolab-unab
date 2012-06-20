@@ -19,7 +19,8 @@ class seccion {
     return $this->vacantes;
   }
 
-  private function descontarVacantes($vacantesPedidas) {
+  private function descontarVacantes($vacantesPedidas) 
+  {
     if(($this->vacantes - $vacantesPedidas) >= 0)
     {
       $this->vacantes = $this->vacantes - $vacantesPedidas;

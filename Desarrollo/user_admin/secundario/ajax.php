@@ -1,5 +1,6 @@
 <?php
 include('../../class/db/connect.php');
+include('../../class/db/funciones.php');
 session_start();
 if(isset($_SESSION['usuario']))
 {
@@ -176,22 +177,91 @@ if(isset($_SESSION['usuario']))
         }
         else
         {
-          $mysqli6 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-          $sql6 = "UPDATE Clase SET Dia = '{$dia}',Modulo_Inicio = '{$moduloInicioF}',Modulo_Termino = '{$moduloTerminoF}' WHERE Id = '{$_GET['idClase']}';";
-          if(($mysqli6->query($sql6)) == true)
+		  //4. Buscar una clase de departamento.
+		  $regimen = obtenerRegimenCarrera($_SESSION['carrera']);
+		  $mysqli7 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+          $sql7 = "SELECT c.Id
+                    FROM Carrera_Tiene_Ramos AS ctr
+					INNER JOIN Ramos_Impartidos AS ri ON ri.Codigo_Carrera = '{$_SESSION['carrera']}' AND ri.Codigo_Ramo = ctr.Codigo_Ramo AND ri.Codigo_Semestre = '{$_SESSION['codigoSemestre']}' AND ri.Impartido = 1
+					INNER JOIN Ramo AS r ON r.Codigo = ctr.Codigo_Ramo
+                    INNER JOIN Ramo_Tipo AS rt ON rt.Id = r.Tipo AND rt.soloDepto = true					
+                    INNER JOIN Seccion AS s ON s.Codigo_Ramo = ctr.Codigo_Ramo AND s.Codigo_Carrera = 'DEPTO' AND s.Codigo_Semestre = '{$_SESSION['codigoSemestre']}' AND s.Regimen = '{$regimen}'
+                    INNER JOIN Clase AS c ON c.Seccion_Id = s.Id AND c.Dia = '{$dia}' AND c.Modulo_Inicio = '{$moduloInicioF}' AND c.Modulo_Termino = '{$moduloTerminoF}'
+                   WHERE ctr.Codigo_Carrera = '{$_SESSION['carrera']}' AND ctr.Semestre = '{$semestreRamo}';";
+          $res7 = $mysqli7->prepare($sql7);
+          $res7->execute();
+          $res7->bind_result($idClase);
+          if($res7->fetch())
           {
-            echo '1';
+		    $res7->free_result();
+            echo '-3';
           }
-          else
-          {
-            echo '2';
-          }
+		  else
+		  {
+            $mysqli6 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+            $sql6 = "UPDATE Clase SET Dia = '{$dia}',Modulo_Inicio = '{$moduloInicioF}',Modulo_Termino = '{$moduloTerminoF}' WHERE Id = '{$_GET['idClase']}';";
+            if(($mysqli6->query($sql6)) == true)
+            {
+              echo '1';
+            }
+            else
+            {
+              echo '2';
+            }
+		  }
         }
       }
       $res4->free_result();
     }
     $res3->free_result();
   }//else
+  }
+  elseif(isset($_GET['idClaseDepto']) && isset($_GET['horarioDepto']))
+  {
+    $inicio = 0;
+    $fin = 0;
+    $largo = strlen($_GET['horarioDepto']); 
+    $flag = 0;
+    $i = 0;
+    for($i = 0;$i<2;$i++)
+    {
+      $flag = 0;
+      while($flag == 0)
+      {
+        if(substr($_GET['horarioDepto'],$fin,1) == '.')
+        {
+          if($i == 0) {
+            $dia = substr($_GET['horarioDepto'],0,$fin);
+            $inicio = $fin+1;
+            $flag = 1;
+          }
+          elseif($i == 1) {
+            $moduloInicioF = substr($_GET['horarioDepto'],$inicio,$fin-$inicio);
+            $moduloTerminoF = substr($_GET['horarioDepto'],$fin+1,$largo-$fin);
+            $flag = 1;    
+          }
+        } 
+        $fin++;
+      }
+    }
+
+    if($moduloInicioF == 0 || $moduloTerminoF == 0)
+      echo 'false inicio: '.$moduloInicioF.' termino: '.$moduloTerminoF;
+    else
+	{
+            $mysqli6 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+            $sql6 = "UPDATE Clase SET Dia = '{$dia}',Modulo_Inicio = '{$moduloInicioF}',Modulo_Termino = '{$moduloTerminoF}' WHERE Id = '{$_GET['idClaseDepto']}';";
+            if(($mysqli6->query($sql6)) == true)
+            {
+              echo '1';
+            }
+            else
+            {
+              echo '2';
+            }
+		  
+        
+      }
   }
   elseif(isset($_GET['idClase2']))
   {

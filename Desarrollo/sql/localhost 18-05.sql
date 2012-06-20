@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.10.1
+-- version 3.3.9
 -- http://www.phpmyadmin.net
 --
--- Host: localhost
--- Generation Time: Jun 19, 2012 at 07:43 PM
--- Server version: 5.5.20
--- PHP Version: 5.3.10
+-- Servidor: localhost
+-- Tiempo de generación: 18-05-2012 a las 19:58:56
+-- Versión del servidor: 5.5.8
+-- Versión de PHP: 5.3.5
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -17,12 +16,14 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `hsc`
+-- Base de datos: `hsc`
 --
+CREATE DATABASE `hsc` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `hsc`;
 
 DELIMITER $$
 --
--- Procedures
+-- Procedimientos
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `abrirSemestreAnterior`(codigoSemestre INT, fecha DATETIME)
 BEGIN
@@ -400,7 +401,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `carrera`
+-- Estructura de tabla para la tabla `carrera`
 --
 
 CREATE TABLE IF NOT EXISTS `carrera` (
@@ -415,7 +416,7 @@ CREATE TABLE IF NOT EXISTS `carrera` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `carrera`
+-- Volcar la base de datos para la tabla `carrera`
 --
 
 INSERT INTO `carrera` (`Codigo`, `NombreUsuario_JC`, `Nombre_Carrera`, `Periodo`, `Regimen`, `Numero`) VALUES
@@ -430,19 +431,19 @@ INSERT INTO `carrera` (`Codigo`, `NombreUsuario_JC`, `Nombre_Carrera`, `Periodo`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `carrera_tiene_ramos`
+-- Estructura de tabla para la tabla `carrera_tiene_ramos`
 --
 
 CREATE TABLE IF NOT EXISTS `carrera_tiene_ramos` (
   `Codigo_Carrera` varchar(9) NOT NULL COMMENT 'Código de la carrera.',
-  `Codigo_Ramo` varchar(7) NOT NULL COMMENT 'Código del ramo que pertenece a la carrera.',
+  `Codigo_Ramo` varchar(6) NOT NULL COMMENT 'Código del ramo que pertenece a la carrera.',
   `Semestre` int(2) NOT NULL COMMENT 'Semestre o trimestre en el que se imparte el ramo.',
   KEY `Codigo_Carrera` (`Codigo_Carrera`),
   KEY `Codigo_Ramo` (`Codigo_Ramo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `carrera_tiene_ramos`
+-- Volcar la base de datos para la tabla `carrera_tiene_ramos`
 --
 
 INSERT INTO `carrera_tiene_ramos` (`Codigo_Carrera`, `Codigo_Ramo`, `Semestre`) VALUES
@@ -730,14 +731,12 @@ INSERT INTO `carrera_tiene_ramos` (`Codigo_Carrera`, `Codigo_Ramo`, `Semestre`) 
 ('UNAB29200', 'IET310', 8),
 ('UNAB29200', 'IET106', 8),
 ('UNAB21500', 'IET002', 1),
-('UNAB11500', 'IET002', 1),
-('UNAB11500', 'ZZZ001', 2),
-('UNAB21500', 'ZZZ001', 2);
+('UNAB11500', 'IET002', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clase`
+-- Estructura de tabla para la tabla `clase`
 --
 
 CREATE TABLE IF NOT EXISTS `clase` (
@@ -750,44 +749,17 @@ CREATE TABLE IF NOT EXISTS `clase` (
   `Dia` varchar(12) DEFAULT NULL COMMENT 'Día de la clase.',
   `Codigo_Semestre` int(11) NOT NULL COMMENT 'Codigo del semestre al cual pertenece la clase.',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=185 ;
 
 --
--- Dumping data for table `clase`
+-- Volcar la base de datos para la tabla `clase`
 --
 
-INSERT INTO `clase` (`Id`, `Clase_Tipo`, `Seccion_Id`, `RUT_Profesor`, `Modulo_Inicio`, `Modulo_Termino`, `Dia`, `Codigo_Semestre`) VALUES
-(1, 'Teoria', 1, 163546027, NULL, NULL, NULL, 201220),
-(2, 'Teoria', 1, NULL, NULL, NULL, NULL, 201220),
-(3, 'Ayudantia', 1, NULL, NULL, NULL, NULL, 201220),
-(4, 'Laboratorio', 1, NULL, NULL, NULL, NULL, 201220),
-(5, 'Teoria', 2, NULL, NULL, NULL, NULL, 201220),
-(6, 'Teoria', 2, NULL, NULL, NULL, NULL, 201220),
-(7, 'Ayudantia', 2, NULL, NULL, NULL, NULL, 201220),
-(8, 'Teoria', 3, NULL, NULL, NULL, NULL, 201220),
-(9, 'Teoria', 3, NULL, NULL, NULL, NULL, 201220),
-(10, 'Ayudantia', 3, NULL, NULL, NULL, NULL, 201220),
-(11, 'Laboratorio', 3, NULL, NULL, NULL, NULL, 201220),
-(12, 'Teoria', 4, NULL, NULL, NULL, NULL, 201220),
-(13, 'Teoria', 4, NULL, NULL, NULL, NULL, 201220),
-(14, 'Ayudantia', 4, NULL, NULL, NULL, NULL, 201220),
-(15, 'Laboratorio', 4, NULL, NULL, NULL, NULL, 201220),
-(16, 'Teoria', 5, NULL, NULL, NULL, NULL, 201220),
-(17, 'Teoria', 5, NULL, NULL, NULL, NULL, 201220),
-(18, 'Ayudantia', 5, NULL, NULL, NULL, NULL, 201220),
-(19, 'Teoria', 6, NULL, 7, 8, 'Miercoles', 201220),
-(20, 'Teoria', 6, NULL, NULL, NULL, NULL, 201220),
-(21, 'Ayudantia', 6, NULL, NULL, NULL, NULL, 201220),
-(22, 'Laboratorio', 6, NULL, 7, 8, 'Lunes', 201220),
-(23, 'Teoria', 7, NULL, NULL, NULL, NULL, 201220),
-(24, 'Teoria', 7, NULL, NULL, NULL, NULL, 201220),
-(25, 'Ayudantia', 7, NULL, NULL, NULL, NULL, 201220),
-(26, 'Laboratorio', 7, NULL, NULL, NULL, NULL, 201220);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clase_tipo`
+-- Estructura de tabla para la tabla `clase_tipo`
 --
 
 CREATE TABLE IF NOT EXISTS `clase_tipo` (
@@ -796,71 +768,15 @@ CREATE TABLE IF NOT EXISTS `clase_tipo` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `clase_usa_lab`
+-- Volcar la base de datos para la tabla `clase_tipo`
 --
 
-CREATE TABLE IF NOT EXISTS `clase_usa_lab` (
-  `Id` int(11) NOT NULL,
-  PRIMARY KEY (`Id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `disponibilidad`
---
-
-CREATE TABLE IF NOT EXISTS `disponibilidad` (
-  `id_mod_disp` int(11) NOT NULL,
-  `nrc_disp` varchar(8) NOT NULL,
-  PRIMARY KEY (`id_mod_disp`,`nrc_disp`),
-  KEY `nrc_disp` (`nrc_disp`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `imparte`
---
-
-CREATE TABLE IF NOT EXISTS `imparte` (
-  `id_lab_imp` int(11) NOT NULL,
-  `id_mod_imp` int(11) NOT NULL,
-  `id_asig_imp` int(11) NOT NULL,
-  `periodo` int(11) NOT NULL,
-  PRIMARY KEY (`id_lab_imp`,`id_mod_imp`,`id_asig_imp`,`periodo`),
-  KEY `id_mod_imp` (`id_mod_imp`),
-  KEY `id_asig_imp` (`id_asig_imp`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `laboratorio`
---
-
-CREATE TABLE IF NOT EXISTS `laboratorio` (
-  `id_lab` int(11) NOT NULL AUTO_INCREMENT COMMENT 'identificador del laboratorio para el software',
-  `edificio` varchar(3) NOT NULL COMMENT 'edificio en donde se encuentra el laboratorio (ex: R3)',
-  `sala` varchar(6) NOT NULL COMMENT 'sala en donde se encuentra (ex: lab402)',
-  PRIMARY KEY (`id_lab`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
-
---
--- Dumping data for table `laboratorio`
---
-
-INSERT INTO `laboratorio` (`id_lab`, `edificio`, `sala`) VALUES
-(10, 'R3', '406'),
-(11, 'R3', '401');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `modulo`
+-- Estructura de tabla para la tabla `modulo`
 --
 
 CREATE TABLE IF NOT EXISTS `modulo` (
@@ -871,7 +787,7 @@ CREATE TABLE IF NOT EXISTS `modulo` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `modulo`
+-- Volcar la base de datos para la tabla `modulo`
 --
 
 INSERT INTO `modulo` (`Modulo`, `Regimen`, `Inicio`, `Termino`) VALUES
@@ -889,23 +805,17 @@ INSERT INTO `modulo` (`Modulo`, `Regimen`, `Inicio`, `Termino`) VALUES
 (12, 'D', '18:35:00', '19:20:00'),
 (13, 'D', '19:30:00', '20:15:00'),
 (14, 'D', '20:25:00', '21:10:00'),
-(7, 'V', '19:00:00', '19:45:00'),
-(8, 'V', '19:46:00', '20:30:00'),
-(9, 'V', '20:40:00', '21:25:00'),
-(10, 'V', '21:26:00', '22:10:00'),
-(11, 'V', '22:20:00', '23:05:00'),
-(12, 'V', '23:06:00', '23:50:00'),
-(1, 'V', '08:30:00', '09:15:00'),
-(2, 'V', '09:25:00', '10:10:00'),
-(3, 'V', '10:20:00', '11:05:00'),
-(4, 'V', '11:15:00', '12:00:00'),
-(5, 'V', '12:10:00', '12:55:00'),
-(6, 'V', '13:05:00', '13:50:00');
+(1, 'V', '19:00:00', '19:45:00'),
+(2, 'V', '19:46:00', '20:30:00'),
+(3, 'V', '20:40:00', '21:25:00'),
+(4, 'V', '21:26:00', '22:10:00'),
+(5, 'V', '22:20:00', '23:05:00'),
+(6, 'V', '23:06:00', '23:50:00');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `presupuesto`
+-- Estructura de tabla para la tabla `presupuesto`
 --
 
 CREATE TABLE IF NOT EXISTS `presupuesto` (
@@ -915,10 +825,15 @@ CREATE TABLE IF NOT EXISTS `presupuesto` (
   KEY `Codigo_Carrera` (`Codigo_Carrera`,`Codigo_Semestre`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+--
+-- Volcar la base de datos para la tabla `presupuesto`
+--
+
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `profesor`
+-- Estructura de tabla para la tabla `profesor`
 --
 
 CREATE TABLE IF NOT EXISTS `profesor` (
@@ -929,7 +844,7 @@ CREATE TABLE IF NOT EXISTS `profesor` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `profesor`
+-- Volcar la base de datos para la tabla `profesor`
 --
 
 INSERT INTO `profesor` (`RUT_Profesor`, `Nombre`, `Profesor_Grado`) VALUES
@@ -1086,7 +1001,7 @@ INSERT INTO `profesor` (`RUT_Profesor`, `Nombre`, `Profesor_Grado`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `profesor_grado`
+-- Estructura de tabla para la tabla `profesor_grado`
 --
 
 CREATE TABLE IF NOT EXISTS `profesor_grado` (
@@ -1096,7 +1011,7 @@ CREATE TABLE IF NOT EXISTS `profesor_grado` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
--- Dumping data for table `profesor_grado`
+-- Volcar la base de datos para la tabla `profesor_grado`
 --
 
 INSERT INTO `profesor_grado` (`Id`, `Grado`) VALUES
@@ -1108,20 +1023,25 @@ INSERT INTO `profesor_grado` (`Id`, `Grado`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `profesor_tiene_ramos`
+-- Estructura de tabla para la tabla `profesor_tiene_ramos`
 --
 
 CREATE TABLE IF NOT EXISTS `profesor_tiene_ramos` (
   `RUT_Profesor` int(10) NOT NULL COMMENT 'Rut profesor que dicta ramo.',
-  `Codigo_Ramo` varchar(7) NOT NULL COMMENT 'Ramo dictado por el profesor.',
+  `Codigo_Ramo` varchar(6) NOT NULL COMMENT 'Ramo dictado por el profesor.',
   PRIMARY KEY (`RUT_Profesor`),
   KEY `Codigo_Ramo` (`Codigo_Ramo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Volcar la base de datos para la tabla `profesor_tiene_ramos`
+--
+
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ramo`
+-- Estructura de tabla para la tabla `ramo`
 --
 
 CREATE TABLE IF NOT EXISTS `ramo` (
@@ -1134,201 +1054,171 @@ CREATE TABLE IF NOT EXISTS `ramo` (
   `Laboratorio` int(2) NOT NULL COMMENT 'Horas de laboratorio.',
   `Taller` int(2) NOT NULL COMMENT 'Horas de taller.',
   `Creditos` int(2) NOT NULL COMMENT 'Creditos del ramo.',
-  `SepAyu` tinyint(1) NOT NULL COMMENT 'Indica si se debe separar en dos la ayudantía de dicho ramo.',
-  `SepLab` tinyint(1) NOT NULL COMMENT 'Indica si se debe separar en dos el laboratorio de dicho ramo.',
-  `SepTal` tinyint(1) NOT NULL COMMENT 'Indica si se debe separar en dos el taller de dicho ramo.',
   PRIMARY KEY (`Codigo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `ramo`
+-- Volcar la base de datos para la tabla `ramo`
 --
 
-INSERT INTO `ramo` (`Codigo`, `Nombre`, `Teoria`, `Tipo`, `Periodo`, `Ayudantia`, `Laboratorio`, `Taller`, `Creditos`, `SepAyu`, `SepLab`, `SepTal`) VALUES
-('CEG001', 'ELECTIVO DE FORMACIÃ“N GENERAL I', 2, 4, 1, 0, 0, 0, 2, 0, 0, 0),
-('CEG002', 'ELECTIVO DE FORMACIÃ“N GENERAL II', 2, 4, 1, 0, 0, 0, 2, 0, 0, 0),
-('CEG003', 'ELECTIVO DE FORMACIÃ“N GENERAL III', 2, 4, 1, 0, 0, 0, 2, 0, 0, 0),
-('CEG004', 'ELECTIVO DE FORMACIÃ“N GENERAL IV', 2, 4, 1, 0, 0, 0, 2, 0, 0, 0),
-('FIC1601', 'METODOLOGÃAS DE APRENDIZAJE Y ESTUDIO', 0, 4, 1, 0, 0, 3, 3, 0, 0, 0),
-('FIC1602', 'ETICA, SOCIEDAD Y TRABAJO', 0, 4, 1, 0, 0, 3, 3, 0, 0, 0),
-('FIC1603', 'TECNOLOGÃAS DE LA INFORMACIÃ“N', 0, 1, 1, 0, 0, 3, 3, 0, 0, 0),
-('FIC1604', 'COMUNICACIÃ“N EFECTIVA', 0, 4, 1, 0, 0, 3, 3, 0, 0, 0),
-('FMF021', 'FISICA I', 4, 2, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMF023', 'INTRODUCCION A LA FISICA', 4, 2, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMF024', 'FÃSICA GENERAL', 4, 2, 1, 0, 0, 2, 6, 0, 0, 0),
-('FMF025', 'INTRODUCCIÃ“N A LA MECANICA', 4, 2, 1, 0, 0, 2, 6, 0, 0, 0),
-('FMF081', 'DESARROLLO EXPERIMENTAL I', 0, 2, 1, 0, 2, 0, 2, 0, 0, 0),
-('FMF082', 'MOD.EXPERIMENTAL I', 0, 2, 1, 0, 4, 0, 4, 0, 0, 0),
-('FMF086', 'FISICA EXPERIMENTAL', 0, 2, 1, 0, 4, 0, 4, 0, 0, 0),
-('FMF121', 'FÃSICA II', 4, 2, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMF122', 'MECANICA', 4, 2, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMF141', 'ELECTRICIDAD, MAGNETISMO Y ONDAS', 4, 2, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMF144', 'ELECTRICIDAD Y MAGNETISMO', 4, 2, 1, 0, 0, 2, 6, 0, 0, 0),
-('FMF181', 'DESARROLLO EXPERIMENTAL II', 0, 2, 1, 0, 2, 0, 2, 0, 0, 0),
-('FMF182', 'MOD.EXPERIMENTAL II', 0, 2, 1, 0, 4, 0, 4, 0, 0, 0),
-('FMF226', 'FISICA MODERNA', 4, 2, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMF241', 'ELECTROMAGNETISMO', 4, 2, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMF282', 'MOD. EXPERIMENTAL III', 0, 2, 1, 0, 4, 0, 4, 0, 0, 0),
-('FMM010', 'ALGEBRA I', 4, 6, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMM012', 'INTRODUCCIÃ“N A LAS MATEMATICAS', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM013', 'ALGEBRA I', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM030', 'CÃLCULO I', 4, 6, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMM033', 'CALCULO I', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM110', 'ALGEBRA LINEAL', 4, 6, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMM112', 'CÃLCULO DIFERENCIAL', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM113', 'ALGEBRA LINEAL', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM130', 'CÃLCULO II', 4, 6, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMM133', 'CALCULO II', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM214', 'CALCULO INTEGRAL Y PROBABILIDADES', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM230', 'CÃLCULO III', 4, 6, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMM232', 'CALCULO NUMERICO', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM235', 'CALCULO EN VARIAS VARIABLES', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM254', 'ECUACIONES DIFERENCIALES', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMM312', 'SISTEMAS Y ECUACIONES DIFERENCIALES LINEALES', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('FMS175', 'PROBABILIDAD Y ESTADISTICA', 4, 6, 1, 2, 0, 0, 6, 0, 0, 0),
-('FMS176', 'PROBABILIDADES Y ESTADISTICA', 6, 6, 1, 2, 0, 0, 8, 0, 0, 0),
-('ICC111', 'ELEMENTOS DE COMPUTACIÃ“N', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC120', 'MODELAMIENTO Y PROGRAMACIÃ“N', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC121', 'ESTRUCTURA DE DATOS', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC130', 'CIRCUITOS ELÃ‰CTRICOS Y ELECTRÃ“NICOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICC133', 'PROCESAMIENTO DE SEÃ‘ALES', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICC233', 'AUTOMATAS Y COMPILADORES', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICC234', 'LÃ“GICA Y ANÃLISIS DE ALGORITMOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICC235', 'ARQUITECTURA DE COMPUTADORES', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC236', 'MODELAMIENTO DE DATOS', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC243', 'SISTEMAS OPERATIVOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICC244', 'INTELIGENCIA ARTIFICIAL', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC245', 'REDES DE DATOS II', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC246', 'INGENIERÃA DE SOFTWARE I', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC247', 'REDES DE DATOS I', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC248', 'BASE DE DATOS', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC249', 'MODELAMIENTO Y SIMULACIÃ“N', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC252', 'EVALUACIÃ“N Y ADMINISTRACIÃ“N DE PROYECTOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICC253', 'TECNOLOGÃAS DE SISTEMAS DE INFORMACIÃ“N', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC254', 'SISTEMAS DE INFORMACIÃ“N DE GESTIÃ“N', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICC255', 'ARQUITECTURA DE SISTEMAS', 4, 1, 1, 2, 2, 0, 8, 0, 0, 0),
-('ICC256', 'INGENIERIA DE SOFTWARE II', 4, 1, 1, 2, 2, 0, 8, 0, 0, 0),
-('ICC260', 'TALLER DE TITULO I', 5, 1, 1, 0, 0, 0, 5, 0, 0, 0),
-('ICC261', 'TALLER DE TITULO II', 6, 1, 1, 0, 0, 0, 6, 0, 0, 0),
-('ICC352', 'ELECTIVO DE FORMACION PROFESIONAL III', 4, 5, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC353', 'ELECTIVO DE FORMACION PROFESIONAL I', 4, 5, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC354', 'ELECTIVO DE FORMACION PROFESIONAL II', 4, 5, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC360', 'ELECTIVO DE FORMACION PROFESIONAL IV', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC361', 'ELECTIVO DE FORMACION PROFESIONAL V', 4, 5, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC362', 'ELECTIVO DE FORMACION PROFESIONAL VI', 4, 5, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICC363', 'ELECTIVO DE FORMACION PROFESIONAL VII', 4, 5, 1, 0, 2, 0, 6, 0, 0, 0),
-('ICI041', 'ADMINISTRACIÃ“N DE RECURSOS HUMANOS', 3, 1, 1, 0, 0, 0, 3, 0, 0, 0),
-('ICI050', 'TALLER DE HABILIDADES GERENCIALES', 3, 1, 1, 0, 0, 0, 3, 0, 0, 0),
-('ICI111', 'INTRODUCCION A LA INGENIERIA', 2, 1, 1, 0, 0, 0, 2, 0, 0, 0),
-('ICI135', 'TEORIA DE SISTEMAS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICI245', 'INGENIERIA ECONOMICA', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICI248', 'ECONOMIA', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('ICI249', 'CONTABILIDAD Y FINANZAS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEC119', 'LENGUAJE DE PROGRAMACION', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEC122', 'MODELAMIENTO DE DATOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEC130', 'TRANSMISIÃ“N DE DATOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEC210', 'SISTEMA DE INFORMACIÃ“N I', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IEC211', 'SISTEMA DE INFORMACIÃ“N II', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEC220', 'BASE DE DATOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEC230', 'INGENIERÃA DE REDES I', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEC301', 'SISTEMA DE GESTIÃ“N TECNOLÃ“GICA', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IEC302', 'PROYECTO DE TÃTULO', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IEC320', 'TALLER DE DESARROLLO DE SOFTWARE I', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IEC325', 'TALLER DE DESARROLLO DE SOFTWARE II', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IEC330', 'INGENIERÃA DE REDES II', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEG122', 'BASE DE DATOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEG191', 'PLANIFICACIÃ“N ESTRATÃ‰GICA', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IEG192', 'ADMINISTRACIÃ“N DE LA PRODUCCIÃ“N', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IEG210', 'SISTEMAS DE INFORMACIÃ“N', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IEG230', 'INTRODUCCIÃ“N A LAS REDES', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEG270', 'MICROECONOMÃA', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEG271', 'MACROECONOMÃA', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEG281', 'COSTOS Y PRESUPUESTOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IEG300', 'PROYECTO DE TÃTULO', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET001', 'ELEMENTOS DE COMPUTACIÃ“N', 4, 1, 1, 2, 2, 0, 8, 0, 0, 0),
-('IET020', 'METODOLOGÃA DE PROGRAMACIÃ“N', 4, 1, 1, 2, 2, 0, 8, 0, 0, 0),
-('IET030', 'ORGANIZAC. DE COMPUTADORES', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IET090', 'INTRODUCCIÃ“N A LA ADMINISTRACIÃ“N', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IET091', 'ADMINISTRACIÃ“N DE RRHH', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET100', 'ELECTIVO F. PROFESIONAL I', 4, 5, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET101', 'ELECTIVO F. PROFESIONAL II', 4, 5, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET102', 'ELECTIVO DE F. PROFESIONAL III', 4, 5, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET103', 'ELECTIVO F. PROFESIONAL IV', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET104', 'ELECTIVO DE F. PROFESIONAL V', 4, 5, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET105', 'ELECTIVO F. PROFESIONAL VI', 4, 5, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET106', 'ELECTIVO FORM. PROFESIONAL VII', 4, 5, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET110', 'SISTEMAS OPERATIVOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IET121', 'ESTRUCTURAS DE DATOS', 4, 1, 1, 2, 2, 0, 8, 0, 0, 0),
-('IET140', 'INVESTIGACIÃ“N OPERATIVA', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IET170', 'ECONOMÃA', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IET180', 'CONTABILIDAD', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IET181', 'FINANZAS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IET190', 'DESARROLLO ORGANIZACIONAL', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET193', 'MERCADOS', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET221', 'INGENIERÃA DE SOFTWARE', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IET300', 'PREP. Y EVALUACIÃ“N DE PROYECTOS', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IET310', 'AUDITORIA COMPUTACIONAL', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IND2102', 'COSTOS Y PRESUPUESTOS', 4, 1, 1, 0, 0, 0, 4, 0, 0, 0),
-('IND2103', 'INGENIERÃA ECONOMICA', 4, 1, 1, 2, 0, 0, 6, 0, 0, 0),
-('IND2104', 'FORMULACIÃ“N Y EVALUACIÃ“N DE PROYECTOS', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('INF1201', 'PROGRAMACIÃ“N', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('INF1203', 'SISTEMAS OPERATIVOS', 0, 1, 1, 0, 0, 4, 4, 0, 0, 0),
-('ING119', 'INGLÃ‰S I', 0, 3, 1, 0, 0, 6, 6, 0, 0, 0),
-('ING129', 'INGLÃ‰S II', 0, 3, 1, 0, 0, 6, 6, 0, 0, 0),
-('ING239', 'INGLÃ‰S III', 0, 3, 1, 0, 0, 6, 6, 0, 0, 0),
-('ING249', 'INGLÃ‰S IV', 0, 3, 1, 0, 0, 6, 6, 0, 0, 0),
-('ITC1401', 'INTRODUCCIÃ“N A LOS SISTEMAS DE TELECOMUNICACIONES', 4, 1, 1, 0, 0, 2, 6, 0, 0, 0),
-('ITC1601', 'ELECTRONICA', 0, 1, 1, 0, 0, 4, 4, 0, 0, 0),
-('ITC1701', 'REDES DE COMPUTADORES', 0, 1, 1, 0, 0, 4, 4, 0, 0, 0),
-('ITC2401', 'SEÃ‘ALES Y SISTEMAS', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ITC2402', 'COMUNICACIONES DIGITALES', 0, 1, 1, 0, 0, 4, 4, 0, 0, 0),
-('ITC2403', 'SISTEMAS DE COMUNICACIONES', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ITC2404', 'REDES DE TELECOMUNICACIONES', 4, 1, 1, 0, 2, 0, 6, 0, 0, 0),
-('ITC2405', 'TOPICOS DE ESPECIALIDAD EN TELECOMUNICACIONES', 0, 5, 1, 0, 0, 4, 4, 0, 0, 0),
-('ITC2601', 'SISTEMAS DE CONTROL', 0, 1, 1, 0, 0, 4, 4, 0, 0, 0),
-('ITC2702', 'REDES DE DATOS', 0, 1, 1, 0, 0, 4, 4, 0, 0, 0),
-('ITC2704', 'COMUNICACIONES OPTICAS', 0, 1, 1, 0, 0, 4, 4, 0, 0, 0),
-('ITC2705', 'COMUNICACIONES INALAMBRICAS', 0, 1, 1, 0, 0, 4, 4, 0, 0, 0),
-('ITC2706', 'TOPICOS DE ESPECIALIDAD EN REDES', 0, 5, 1, 0, 0, 4, 4, 0, 0, 0),
-('ITC2802', 'INGENIERIA DE PROYECTOS', 6, 1, 1, 0, 0, 0, 6, 0, 0, 0),
-('ITC2803', 'PROYECTO DE TITULO', 6, 1, 1, 0, 0, 0, 6, 0, 0, 0),
-('ITC2901', 'FORMACIÃ“N PROFESIONAL COMPLEMENTARIA I', 0, 5, 1, 0, 0, 3, 3, 0, 0, 0),
-('ITC2902', 'FORMACIÃ“N PROFESIONAL COMPLEMENTARIA II', 0, 5, 1, 0, 0, 3, 3, 0, 0, 0),
-('QUI070', 'QUIMICA Y AMBIENTE', 4, 7, 1, 2, 0, 0, 6, 0, 0, 0),
-('QUI104', 'QUIMICA', 4, 7, 1, 2, 0, 0, 6, 0, 0, 0),
-('QUI105', 'LABORATORIO DE QUIMICA', 0, 7, 1, 0, 2, 0, 2, 0, 0, 0),
-('ZZDEPTO', 'fisica depto', 4, 2, 1, 2, 4, 0, 10, 1, 1, 0),
-('ZZZ001', 'Ultimo Ramo', 4, 1, 1, 2, 2, 2, 10, 1, 1, 1);
+INSERT INTO `ramo` (`Codigo`, `Nombre`, `Teoria`, `Tipo`, `Periodo`, `Ayudantia`, `Laboratorio`, `Taller`, `Creditos`) VALUES
+('CEG001', 'ELECTIVO DE FORMACIÃ“N GENERAL I', 2, 4, 1, 0, 0, 0, 2),
+('CEG002', 'ELECTIVO DE FORMACIÃ“N GENERAL II', 2, 4, 1, 0, 0, 0, 2),
+('CEG003', 'ELECTIVO DE FORMACIÃ“N GENERAL III', 2, 4, 1, 0, 0, 0, 2),
+('CEG004', 'ELECTIVO DE FORMACIÃ“N GENERAL IV', 2, 4, 1, 0, 0, 0, 2),
+('FIC1601', 'METODOLOGÃAS DE APRENDIZAJE Y ESTUDIO', 0, 4, 1, 0, 0, 3, 3),
+('FIC1602', 'ETICA, SOCIEDAD Y TRABAJO', 0, 4, 1, 0, 0, 3, 3),
+('FIC1603', 'TECNOLOGÃAS DE LA INFORMACIÃ“N', 0, 1, 1, 0, 0, 3, 3),
+('FIC1604', 'COMUNICACIÃ“N EFECTIVA', 0, 4, 1, 0, 0, 3, 3),
+('FMF021', 'FISICA I', 4, 2, 1, 2, 0, 0, 6),
+('FMF023', 'INTRODUCCION A LA FISICA', 4, 2, 1, 2, 0, 0, 6),
+('FMF024', 'FÃSICA GENERAL', 4, 2, 1, 0, 0, 2, 6),
+('FMF025', 'INTRODUCCIÃ“N A LA MECANICA', 4, 2, 1, 0, 0, 2, 6),
+('FMF081', 'DESARROLLO EXPERIMENTAL I', 0, 2, 1, 0, 2, 0, 2),
+('FMF082', 'MOD.EXPERIMENTAL I', 0, 2, 1, 0, 4, 0, 4),
+('FMF086', 'FISICA EXPERIMENTAL', 0, 2, 1, 0, 4, 0, 4),
+('FMF121', 'FÃSICA II', 4, 2, 1, 2, 0, 0, 6),
+('FMF122', 'MECANICA', 4, 2, 1, 2, 0, 0, 6),
+('FMF141', 'ELECTRICIDAD, MAGNETISMO Y ONDAS', 4, 2, 1, 2, 0, 0, 6),
+('FMF144', 'ELECTRICIDAD Y MAGNETISMO', 4, 2, 1, 0, 0, 2, 6),
+('FMF181', 'DESARROLLO EXPERIMENTAL II', 0, 2, 1, 0, 2, 0, 2),
+('FMF182', 'MOD.EXPERIMENTAL II', 0, 2, 1, 0, 4, 0, 4),
+('FMF226', 'FISICA MODERNA', 4, 2, 1, 2, 0, 0, 6),
+('FMF241', 'ELECTROMAGNETISMO', 4, 2, 1, 2, 0, 0, 6),
+('FMF282', 'MOD. EXPERIMENTAL III', 0, 2, 1, 0, 4, 0, 4),
+('FMM010', 'ALGEBRA I', 4, 6, 1, 2, 0, 0, 6),
+('FMM012', 'INTRODUCCIÃ“N A LAS MATEMATICAS', 6, 6, 1, 2, 0, 0, 8),
+('FMM013', 'ALGEBRA I', 6, 6, 1, 2, 0, 0, 8),
+('FMM030', 'CÃLCULO I', 4, 6, 1, 2, 0, 0, 6),
+('FMM033', 'CALCULO I', 6, 6, 1, 2, 0, 0, 8),
+('FMM110', 'ALGEBRA LINEAL', 4, 6, 1, 2, 0, 0, 6),
+('FMM112', 'CÃLCULO DIFERENCIAL', 6, 6, 1, 2, 0, 0, 8),
+('FMM113', 'ALGEBRA LINEAL', 6, 6, 1, 2, 0, 0, 8),
+('FMM130', 'CÃLCULO II', 4, 6, 1, 2, 0, 0, 6),
+('FMM133', 'CALCULO II', 6, 6, 1, 2, 0, 0, 8),
+('FMM214', 'CALCULO INTEGRAL Y PROBABILIDADES', 6, 6, 1, 2, 0, 0, 8),
+('FMM230', 'CÃLCULO III', 4, 6, 1, 2, 0, 0, 6),
+('FMM232', 'CALCULO NUMERICO', 6, 6, 1, 2, 0, 0, 8),
+('FMM235', 'CALCULO EN VARIAS VARIABLES', 6, 6, 1, 2, 0, 0, 8),
+('FMM254', 'ECUACIONES DIFERENCIALES', 6, 6, 1, 2, 0, 0, 8),
+('FMM312', 'SISTEMAS Y ECUACIONES DIFERENCIALES LINEALES', 6, 6, 1, 2, 0, 0, 8),
+('FMS175', 'PROBABILIDAD Y ESTADISTICA', 4, 6, 1, 2, 0, 0, 6),
+('FMS176', 'PROBABILIDADES Y ESTADISTICA', 6, 6, 1, 2, 0, 0, 8),
+('ICC111', 'ELEMENTOS DE COMPUTACIÃ“N', 4, 1, 1, 0, 2, 0, 6),
+('ICC120', 'MODELAMIENTO Y PROGRAMACIÃ“N', 4, 1, 1, 0, 2, 0, 6),
+('ICC121', 'ESTRUCTURA DE DATOS', 4, 1, 1, 0, 2, 0, 6),
+('ICC130', 'CIRCUITOS ELÃ‰CTRICOS Y ELECTRÃ“NICOS', 4, 1, 1, 2, 0, 0, 6),
+('ICC133', 'PROCESAMIENTO DE SEÃ‘ALES', 4, 1, 1, 2, 0, 0, 6),
+('ICC233', 'AUTOMATAS Y COMPILADORES', 4, 1, 1, 2, 0, 0, 6),
+('ICC234', 'LÃ“GICA Y ANÃLISIS DE ALGORITMOS', 4, 1, 1, 2, 0, 0, 6),
+('ICC235', 'ARQUITECTURA DE COMPUTADORES', 4, 1, 1, 0, 2, 0, 6),
+('ICC236', 'MODELAMIENTO DE DATOS', 4, 1, 1, 0, 2, 0, 6),
+('ICC243', 'SISTEMAS OPERATIVOS', 4, 1, 1, 2, 0, 0, 6),
+('ICC244', 'INTELIGENCIA ARTIFICIAL', 4, 1, 1, 0, 2, 0, 6),
+('ICC245', 'REDES DE DATOS II', 4, 1, 1, 0, 2, 0, 6),
+('ICC246', 'INGENIERÃA DE SOFTWARE I', 4, 1, 1, 0, 2, 0, 6),
+('ICC247', 'REDES DE DATOS I', 4, 1, 1, 0, 2, 0, 6),
+('ICC248', 'BASE DE DATOS', 4, 1, 1, 0, 2, 0, 6),
+('ICC249', 'MODELAMIENTO Y SIMULACIÃ“N', 4, 1, 1, 0, 2, 0, 6),
+('ICC252', 'EVALUACIÃ“N Y ADMINISTRACIÃ“N DE PROYECTOS', 4, 1, 1, 2, 0, 0, 6),
+('ICC253', 'TECNOLOGÃAS DE SISTEMAS DE INFORMACIÃ“N', 4, 1, 1, 0, 2, 0, 6),
+('ICC254', 'SISTEMAS DE INFORMACIÃ“N DE GESTIÃ“N', 4, 1, 1, 2, 0, 0, 6),
+('ICC255', 'ARQUITECTURA DE SISTEMAS', 4, 1, 1, 2, 2, 0, 8),
+('ICC256', 'INGENIERIA DE SOFTWARE II', 4, 1, 1, 2, 2, 0, 8),
+('ICC260', 'TALLER DE TITULO I', 5, 1, 1, 0, 0, 0, 5),
+('ICC261', 'TALLER DE TITULO II', 6, 1, 1, 0, 0, 0, 6),
+('ICC352', 'ELECTIVO DE FORMACION PROFESIONAL III', 4, 5, 1, 0, 2, 0, 6),
+('ICC353', 'ELECTIVO DE FORMACION PROFESIONAL I', 4, 5, 1, 0, 2, 0, 6),
+('ICC354', 'ELECTIVO DE FORMACION PROFESIONAL II', 4, 5, 1, 0, 2, 0, 6),
+('ICC360', 'ELECTIVO DE FORMACION PROFESIONAL IV', 4, 1, 1, 0, 2, 0, 6),
+('ICC361', 'ELECTIVO DE FORMACION PROFESIONAL V', 4, 5, 1, 0, 2, 0, 6),
+('ICC362', 'ELECTIVO DE FORMACION PROFESIONAL VI', 4, 5, 1, 0, 2, 0, 6),
+('ICC363', 'ELECTIVO DE FORMACION PROFESIONAL VII', 4, 5, 1, 0, 2, 0, 6),
+('ICI041', 'ADMINISTRACIÃ“N DE RECURSOS HUMANOS', 3, 1, 1, 0, 0, 0, 3),
+('ICI050', 'TALLER DE HABILIDADES GERENCIALES', 3, 1, 1, 0, 0, 0, 3),
+('ICI111', 'INTRODUCCION A LA INGENIERIA', 2, 1, 1, 0, 0, 0, 2),
+('ICI135', 'TEORIA DE SISTEMAS', 4, 1, 1, 2, 0, 0, 6),
+('ICI245', 'INGENIERIA ECONOMICA', 4, 1, 1, 2, 0, 0, 6),
+('ICI248', 'ECONOMIA', 4, 1, 1, 2, 0, 0, 6),
+('ICI249', 'CONTABILIDAD Y FINANZAS', 4, 1, 1, 2, 0, 0, 6),
+('IEC119', 'LENGUAJE DE PROGRAMACION', 4, 1, 1, 2, 0, 0, 6),
+('IEC122', 'MODELAMIENTO DE DATOS', 4, 1, 1, 2, 0, 0, 6),
+('IEC130', 'TRANSMISIÃ“N DE DATOS', 4, 1, 1, 2, 0, 0, 6),
+('IEC210', 'SISTEMA DE INFORMACIÃ“N I', 4, 1, 1, 0, 0, 0, 4),
+('IEC211', 'SISTEMA DE INFORMACIÃ“N II', 4, 1, 1, 2, 0, 0, 6),
+('IEC220', 'BASE DE DATOS', 4, 1, 1, 2, 0, 0, 6),
+('IEC230', 'INGENIERÃA DE REDES I', 4, 1, 1, 2, 0, 0, 6),
+('IEC301', 'SISTEMA DE GESTIÃ“N TECNOLÃ“GICA', 4, 1, 1, 0, 0, 0, 4),
+('IEC302', 'PROYECTO DE TÃTULO', 4, 1, 1, 0, 0, 0, 4),
+('IEC320', 'TALLER DE DESARROLLO DE SOFTWARE I', 4, 1, 1, 0, 0, 0, 4),
+('IEC325', 'TALLER DE DESARROLLO DE SOFTWARE II', 4, 1, 1, 0, 0, 0, 4),
+('IEC330', 'INGENIERÃA DE REDES II', 4, 1, 1, 2, 0, 0, 6),
+('IEG122', 'BASE DE DATOS', 4, 1, 1, 2, 0, 0, 6),
+('IEG191', 'PLANIFICACIÃ“N ESTRATÃ‰GICA', 4, 1, 1, 0, 0, 0, 4),
+('IEG192', 'ADMINISTRACIÃ“N DE LA PRODUCCIÃ“N', 4, 1, 1, 0, 0, 0, 4),
+('IEG210', 'SISTEMAS DE INFORMACIÃ“N', 4, 1, 1, 0, 0, 0, 4),
+('IEG230', 'INTRODUCCIÃ“N A LAS REDES', 4, 1, 1, 2, 0, 0, 6),
+('IEG270', 'MICROECONOMÃA', 4, 1, 1, 2, 0, 0, 6),
+('IEG271', 'MACROECONOMÃA', 4, 1, 1, 2, 0, 0, 6),
+('IEG281', 'COSTOS Y PRESUPUESTOS', 4, 1, 1, 2, 0, 0, 6),
+('IEG300', 'PROYECTO DE TÃTULO', 4, 1, 1, 0, 0, 0, 4),
+('IET001', 'ELEMENTOS DE COMPUTACIÃ“N', 4, 1, 1, 2, 2, 0, 8),
+('IET020', 'METODOLOGÃA DE PROGRAMACIÃ“N', 4, 1, 1, 2, 2, 0, 8),
+('IET030', 'ORGANIZAC. DE COMPUTADORES', 4, 1, 1, 2, 0, 0, 6),
+('IET090', 'INTRODUCCIÃ“N A LA ADMINISTRACIÃ“N', 4, 1, 1, 2, 0, 0, 6),
+('IET091', 'ADMINISTRACIÃ“N DE RRHH', 4, 1, 1, 0, 0, 0, 4),
+('IET100', 'ELECTIVO F. PROFESIONAL I', 4, 5, 1, 0, 0, 0, 4),
+('IET101', 'ELECTIVO F. PROFESIONAL II', 4, 5, 1, 0, 0, 0, 4),
+('IET102', 'ELECTIVO DE F. PROFESIONAL III', 4, 5, 1, 0, 0, 0, 4),
+('IET103', 'ELECTIVO F. PROFESIONAL IV', 4, 1, 1, 0, 0, 0, 4),
+('IET104', 'ELECTIVO DE F. PROFESIONAL V', 4, 5, 1, 0, 0, 0, 4),
+('IET105', 'ELECTIVO F. PROFESIONAL VI', 4, 5, 1, 0, 0, 0, 4),
+('IET106', 'ELECTIVO FORM. PROFESIONAL VII', 4, 5, 1, 0, 0, 0, 4),
+('IET110', 'SISTEMAS OPERATIVOS', 4, 1, 1, 2, 0, 0, 6),
+('IET121', 'ESTRUCTURAS DE DATOS', 4, 1, 1, 2, 2, 0, 8),
+('IET140', 'INVESTIGACIÃ“N OPERATIVA', 4, 1, 1, 2, 0, 0, 6),
+('IET170', 'ECONOMÃA', 4, 1, 1, 2, 0, 0, 6),
+('IET180', 'CONTABILIDAD', 4, 1, 1, 2, 0, 0, 6),
+('IET181', 'FINANZAS', 4, 1, 1, 2, 0, 0, 6),
+('IET190', 'DESARROLLO ORGANIZACIONAL', 4, 1, 1, 0, 0, 0, 4),
+('IET193', 'MERCADOS', 4, 1, 1, 0, 0, 0, 4),
+('IET221', 'INGENIERÃA DE SOFTWARE', 4, 1, 1, 0, 0, 0, 4),
+('IET300', 'PREP. Y EVALUACIÃ“N DE PROYECTOS', 4, 1, 1, 2, 0, 0, 6),
+('IET310', 'AUDITORIA COMPUTACIONAL', 4, 1, 1, 0, 0, 0, 4),
+('IND2102', 'COSTOS Y PRESUPUESTOS', 4, 1, 1, 0, 0, 0, 4),
+('IND2103', 'INGENIERÃA ECONOMICA', 4, 1, 1, 2, 0, 0, 6),
+('IND2104', 'FORMULACIÃ“N Y EVALUACIÃ“N DE PROYECTOS', 4, 1, 1, 0, 2, 0, 6),
+('INF1201', 'PROGRAMACIÃ“N', 4, 1, 1, 0, 2, 0, 6),
+('INF1203', 'SISTEMAS OPERATIVOS', 0, 1, 1, 0, 0, 4, 4),
+('ING119', 'INGLÃ‰S I', 0, 3, 1, 0, 0, 6, 6),
+('ING129', 'INGLÃ‰S II', 0, 3, 1, 0, 0, 6, 6),
+('ING239', 'INGLÃ‰S III', 0, 3, 1, 0, 0, 6, 6),
+('ING249', 'INGLÃ‰S IV', 0, 3, 1, 0, 0, 6, 6),
+('ITC1401', 'INTRODUCCIÃ“N A LOS SISTEMAS DE TELECOMUNICACIONES', 4, 1, 1, 0, 0, 2, 6),
+('ITC1601', 'ELECTRONICA', 0, 1, 1, 0, 0, 4, 4),
+('ITC1701', 'REDES DE COMPUTADORES', 0, 1, 1, 0, 0, 4, 4),
+('ITC2401', 'SEÃ‘ALES Y SISTEMAS', 4, 1, 1, 0, 2, 0, 6),
+('ITC2402', 'COMUNICACIONES DIGITALES', 0, 1, 1, 0, 0, 4, 4),
+('ITC2403', 'SISTEMAS DE COMUNICACIONES', 4, 1, 1, 0, 2, 0, 6),
+('ITC2404', 'REDES DE TELECOMUNICACIONES', 4, 1, 1, 0, 2, 0, 6),
+('ITC2405', 'TOPICOS DE ESPECIALIDAD EN TELECOMUNICACIONES', 0, 5, 1, 0, 0, 4, 4),
+('ITC2601', 'SISTEMAS DE CONTROL', 0, 1, 1, 0, 0, 4, 4),
+('ITC2702', 'REDES DE DATOS', 0, 1, 1, 0, 0, 4, 4),
+('ITC2704', 'COMUNICACIONES OPTICAS', 0, 1, 1, 0, 0, 4, 4),
+('ITC2705', 'COMUNICACIONES INALAMBRICAS', 0, 1, 1, 0, 0, 4, 4),
+('ITC2706', 'TOPICOS DE ESPECIALIDAD EN REDES', 0, 5, 1, 0, 0, 4, 4),
+('ITC2802', 'INGENIERIA DE PROYECTOS', 6, 1, 1, 0, 0, 0, 6),
+('ITC2803', 'PROYECTO DE TITULO', 6, 1, 1, 0, 0, 0, 6),
+('ITC2901', 'FORMACIÃ“N PROFESIONAL COMPLEMENTARIA I', 0, 5, 1, 0, 0, 3, 3),
+('ITC2902', 'FORMACIÃ“N PROFESIONAL COMPLEMENTARIA II', 0, 5, 1, 0, 0, 3, 3),
+('QUI070', 'QUIMICA Y AMBIENTE', 4, 7, 1, 2, 0, 0, 6),
+('QUI104', 'QUIMICA', 4, 7, 1, 2, 0, 0, 6),
+('QUI105', 'LABORATORIO DE QUIMICA', 0, 7, 1, 0, 2, 0, 2);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ramos_impartidos`
---
-
-CREATE TABLE IF NOT EXISTS `ramos_impartidos` (
-  `Codigo_Carrera` varchar(9) NOT NULL COMMENT 'Código de la carrera en la cual se imparte el ramo.',
-  `Codigo_Ramo` varchar(7) NOT NULL COMMENT 'Codigo del ramo impartido.',
-  `Codigo_Semestre` int(11) NOT NULL COMMENT 'Semestre o trimestre en el cual se imparte.',
-  `Impartido` int(1) NOT NULL COMMENT '1 = Impartido, 2 = No impartido.',
-  KEY `Codigo_Ramo` (`Codigo_Ramo`),
-  KEY `Codigo_Semestre` (`Codigo_Semestre`),
-  KEY `Codigo_Carrera` (`Codigo_Carrera`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `ramos_impartidos`
---
-
-INSERT INTO `ramos_impartidos` (`Codigo_Carrera`, `Codigo_Ramo`, `Codigo_Semestre`, `Impartido`) VALUES
-('UNAB21500', 'IET001', 201220, 1),
-('UNAB21500', 'IET020', 201220, 1),
-('UNAB21500', 'IEC119', 201220, 1);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ramo_tipo`
+-- Estructura de tabla para la tabla `ramo_tipo`
 --
 
 CREATE TABLE IF NOT EXISTS `ramo_tipo` (
@@ -1337,10 +1227,10 @@ CREATE TABLE IF NOT EXISTS `ramo_tipo` (
   `Abreviacion` varchar(3) NOT NULL COMMENT 'Abreviación del tipo de ramo.',
   `soloDepto` tinyint(1) NOT NULL COMMENT 'Indica con true si es un ramo que solamente puede ser dictado por usuario departamento.',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=14 ;
 
 --
--- Dumping data for table `ramo_tipo`
+-- Volcar la base de datos para la tabla `ramo_tipo`
 --
 
 INSERT INTO `ramo_tipo` (`Id`, `Tipo`, `Abreviacion`, `soloDepto`) VALUES
@@ -1355,38 +1245,35 @@ INSERT INTO `ramo_tipo` (`Id`, `Tipo`, `Abreviacion`, `soloDepto`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ramo_usa_lab`
+-- Estructura de tabla para la tabla `ramos_impartidos`
 --
 
-CREATE TABLE IF NOT EXISTS `ramo_usa_lab` (
-  `codigo` varchar(11) NOT NULL,
-  `teoria` varchar(11) NOT NULL,
-  `ayudantia` varchar(11) NOT NULL,
-  `laboratorio` varchar(11) NOT NULL,
-  `taller` varchar(11) NOT NULL,
-  PRIMARY KEY (`codigo`)
+CREATE TABLE IF NOT EXISTS `ramos_impartidos` (
+  `Codigo_Carrera` varchar(9) NOT NULL COMMENT 'Código de la carrera en la cual se imparte el ramo.',
+  `Codigo_Ramo` varchar(7) NOT NULL COMMENT 'Codigo del ramo impartido.',
+  `Codigo_Semestre` int(11) NOT NULL COMMENT 'Semestre o trimestre en el cual se imparte.',
+  `Impartido` int(1) NOT NULL COMMENT '1 = Impartido, 2 = No impartido.',
+  KEY `Codigo_Ramo` (`Codigo_Ramo`),
+  KEY `Codigo_Semestre` (`Codigo_Semestre`),
+  KEY `Codigo_Carrera` (`Codigo_Carrera`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `ramo_usa_lab`
+-- Volcar la base de datos para la tabla `ramos_impartidos`
 --
 
-INSERT INTO `ramo_usa_lab` (`codigo`, `teoria`, `ayudantia`, `laboratorio`, `taller`) VALUES
-('ICC248', 'si', '', 'si', ''),
-('ICC249', 'no', '', 'si', ''),
-('ITC1401', 'si', '', '', 'no');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `seccion`
+-- Estructura de tabla para la tabla `seccion`
 --
 
 CREATE TABLE IF NOT EXISTS `seccion` (
   `Id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id de la sección.',
   `Numero_Seccion` int(11) NOT NULL COMMENT 'Número de la sección.',
   `NRC` int(11) NOT NULL COMMENT 'Código identificador de cada sección.',
-  `Codigo_Ramo` varchar(7) NOT NULL COMMENT 'Código del ramo al cual pertenece la sección.',
+  `Codigo_Ramo` varchar(6) NOT NULL COMMENT 'Código del ramo al cual pertenece la sección.',
   `Codigo_Carrera` varchar(9) NOT NULL COMMENT 'Código de la carrera a la cual le pertenece esta sección.',
   `Codigo_Semestre` int(11) NOT NULL COMMENT 'Semestre al que pertenece la sección.',
   `Regimen` varchar(1) NOT NULL COMMENT 'D = Diurno, V = Vespertino.',
@@ -1395,25 +1282,17 @@ CREATE TABLE IF NOT EXISTS `seccion` (
   PRIMARY KEY (`Id`),
   KEY `Codigo_Ramo` (`Codigo_Ramo`),
   KEY `Numero_Seccion` (`Numero_Seccion`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=46 ;
 
 --
--- Dumping data for table `seccion`
+-- Volcar la base de datos para la tabla `seccion`
 --
 
-INSERT INTO `seccion` (`Id`, `Numero_Seccion`, `NRC`, `Codigo_Ramo`, `Codigo_Carrera`, `Codigo_Semestre`, `Regimen`, `Vacantes`, `Vacantes_utilizadas`) VALUES
-(1, 100, 1524, 'IET001', 'UNAB21500', 201220, 'V', 50, 0),
-(2, 100, 1524, 'IEC119', 'UNAB21500', 201220, 'V', 50, 0),
-(3, 100, 1524, 'IET020', 'UNAB21500', 201220, 'V', 50, 0),
-(4, 101, 1524, 'IET001', 'UNAB21500', 201220, 'V', 50, 0),
-(5, 101, 1524, 'IEC119', 'UNAB21500', 201220, 'V', 50, 0),
-(6, 102, 1524, 'IET001', 'UNAB21500', 201220, 'V', 50, 0),
-(7, 101, 1524, 'IET020', 'UNAB21500', 201220, 'V', 50, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `semestre`
+-- Estructura de tabla para la tabla `semestre`
 --
 
 CREATE TABLE IF NOT EXISTS `semestre` (
@@ -1426,7 +1305,7 @@ CREATE TABLE IF NOT EXISTS `semestre` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `semestre`
+-- Volcar la base de datos para la tabla `semestre`
 --
 
 INSERT INTO `semestre` (`Codigo_Semestre`, `Numero`, `Anho`, `Fecha_Inicio`, `Fecha_Termino`) VALUES
@@ -1435,45 +1314,12 @@ INSERT INTO `semestre` (`Codigo_Semestre`, `Numero`, `Anho`, `Fecha_Inicio`, `Fe
 -- --------------------------------------------------------
 
 --
--- Table structure for table `software`
---
-
-CREATE TABLE IF NOT EXISTS `software` (
-  `id_sw` int(11) NOT NULL AUTO_INCREMENT,
-  `nom_sw` varchar(30) NOT NULL,
-  `version` varchar(30) NOT NULL,
-  PRIMARY KEY (`id_sw`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `software`
---
-
-INSERT INTO `software` (`id_sw`, `nom_sw`, `version`) VALUES
-(1, 'Java', '6.2');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `software_asignado`
---
-
-CREATE TABLE IF NOT EXISTS `software_asignado` (
-  `id_sw_asigna` int(11) NOT NULL,
-  `nrc_asigna` varchar(8) NOT NULL,
-  PRIMARY KEY (`id_sw_asigna`,`nrc_asigna`),
-  KEY `nrc_asigna` (`nrc_asigna`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `solicitud`
+-- Estructura de tabla para la tabla `solicitud`
 --
 
 CREATE TABLE IF NOT EXISTS `solicitud` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `Codigo_Ramo` varchar(7) NOT NULL COMMENT 'Código del ramo pedido.',
+  `Codigo_Ramo` varchar(6) NOT NULL COMMENT 'Código del ramo pedido.',
   `Seccion_asignada` int(11) DEFAULT NULL COMMENT 'Sección a la cual se le asignó la cantidad de vacantes.',
   `Carrera` varchar(9) NOT NULL COMMENT 'Carrera dueña del ramo.',
   `Carrera_Solicitante` varchar(9) NOT NULL COMMENT 'Carrera solicitante de vacantes.',
@@ -1484,12 +1330,17 @@ CREATE TABLE IF NOT EXISTS `solicitud` (
   `Fecha_Respuesta` datetime DEFAULT NULL COMMENT 'Fecha en la cual se respondio a la solicitud.',
   `Estado` int(11) NOT NULL COMMENT '1 = Esperando, 2 = Aceptada y 3 = Denegada.',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+
+--
+-- Volcar la base de datos para la tabla `solicitud`
+--
+
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tipo_usuario`
+-- Estructura de tabla para la tabla `tipo_usuario`
 --
 
 CREATE TABLE IF NOT EXISTS `tipo_usuario` (
@@ -1499,20 +1350,19 @@ CREATE TABLE IF NOT EXISTS `tipo_usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `tipo_usuario`
+-- Volcar la base de datos para la tabla `tipo_usuario`
 --
 
 INSERT INTO `tipo_usuario` (`Id`, `Tipo`) VALUES
 (1, 'Jefe de carrera'),
 (2, 'Administrador'),
 (3, 'Jefe de carrera + administrador'),
-(4, 'Usuario departamento'),
-(5, 'Jefe de Laboratorio');
+(4, 'Usuario departamento');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `trimestre`
+-- Estructura de tabla para la tabla `trimestre`
 --
 
 CREATE TABLE IF NOT EXISTS `trimestre` (
@@ -1525,7 +1375,7 @@ CREATE TABLE IF NOT EXISTS `trimestre` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `trimestre`
+-- Volcar la base de datos para la tabla `trimestre`
 --
 
 INSERT INTO `trimestre` (`Codigo_Trimestre`, `Numero`, `Anho`, `Fecha_Inicio`, `Fecha_Termino`) VALUES
@@ -1534,7 +1384,7 @@ INSERT INTO `trimestre` (`Codigo_Trimestre`, `Numero`, `Anho`, `Fecha_Inicio`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuario`
+-- Estructura de tabla para la tabla `usuario`
 --
 
 CREATE TABLE IF NOT EXISTS `usuario` (
@@ -1548,18 +1398,13 @@ CREATE TABLE IF NOT EXISTS `usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `usuario`
+-- Volcar la base de datos para la tabla `usuario`
 --
 
 INSERT INTO `usuario` (`Nombre_Usuario`, `RUT`, `Nombre`, `Password`, `Id_Tipo`) VALUES
 ('admin', '164827607', 'Administrador', '607c23cfed39259fc0e8ed8636d9bfe5', 2),
 ('admin2', '173184379', 'Cristian Flores', 'e10adc3949ba59abbe56e057f20f883e', 2),
 ('carolina.toro', '15317567-5', 'Carolina Toro Mendoza', '040b7cf4a55014e185813e0644502ea9', 1),
-('cris.pardo', '1-9', 'Cristobal', 'e10adc3949ba59abbe56e057f20f883e', 5),
 ('depto', '164827607', 'Departamento', '040b7cf4a55014e185813e0644502ea9', 4),
 ('miguel.gutierrez', '16102960-2', 'Miguel Gutierrez Gaitan', 'e10adc3949ba59abbe56e057f20f883e', 1),
 ('opinto', '8542558-9', 'Oscar Pinto G.', '040b7cf4a55014e185813e0644502ea9', 3);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

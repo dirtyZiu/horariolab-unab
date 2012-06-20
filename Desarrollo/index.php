@@ -74,8 +74,21 @@ if(!isset($_SESSION['usuario']))
 }
 else
 {
-  header("Location: home.php");
-  exit();
+  if($_SESSION['tipoUsuario'] == 1 || $_SESSION['tipoUsuario'] == 3)
+  {
+    header("Location: home.php");
+    exit();
+  }
+  elseif($_SESSION['tipoUsuario'] == 2)
+  {
+    header("Location: user_admin/admin.php");
+	exit();
+  }
+  elseif($_SESSION['tipoUsuario'] == 4)
+  {
+    header("Location: user_departamento/depto.php");
+	exit();
+  }
 }
 ?>
 
@@ -83,7 +96,7 @@ else
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />

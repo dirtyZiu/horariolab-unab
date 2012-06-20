@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 foreach (glob("../class/*.php") as $filename) {
    include_once($filename);
 }
@@ -13,11 +13,11 @@ if(isset($_SESSION['usuario']))
     $_SESSION['codigoSemestre'] = NULL;
   }
 
-  if(isset($_POST['submit']) && $_POST['submit'] == 'Crear') 
+  if(isset($_POST['submit']) && $_POST['submit'] == 'Dictar') 
   {
-    if(isset($_POST['hiddenCodigoRamo']) && isset($_POST['hiddenCodigoSemestre']) && isset($_POST['regimen']))
+    if(isset($_POST['hiddenCodigoRamo']) && isset($_POST['hiddenCodigoSemestre']) && isset($_POST['hiddenRegimen']))
     {
-      $msg = $usuario->crearSeccionDepartamento($_POST['hiddenCodigoRamo'],$_POST['hiddenCodigoSemestre'],$_POST['regimen']);
+      $msg = $usuario->crearSeccionDepartamento($_POST['hiddenCodigoRamo'],$_POST['hiddenCodigoSemestre'],$_POST['hiddenRegimen']);
     }
     else
     {
@@ -32,7 +32,7 @@ if(isset($_SESSION['usuario']))
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
@@ -54,6 +54,7 @@ if(isset($_SESSION['usuario']))
         <ul id="menu">
           <li><a href="depto.php">Ramos</a></li>
           <li class="selected"><a href="seccion.php">Secciones</a></li>
+		  <li><a href="horario.php">Horario</a></li>
           <li><a href="tipos.php">Tipos</a></li>
           <li><a href="../logout.php">Logout</a></li>
         </ul>
@@ -67,7 +68,7 @@ if(isset($_SESSION['usuario']))
           if(isset($msg))
             echo '<span class="error">'.$msg.'</span>';
           echo '<table>';
-          echo '<tr><td>Codigo</td><td>Nombre</td><td>Crear sección</td><td>Seccines creadas</td></tr>';     
+          echo '<tr><td>Codigo</td><td>Nombre</td><td>Diurno</td><td>Vespertino</td></tr>';     
           verRamosDepartamento();
           echo '</table>';
         ?>

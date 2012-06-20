@@ -13,7 +13,7 @@ if(isset($_SESSION['usuario']))
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />

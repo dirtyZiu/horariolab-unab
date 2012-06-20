@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 foreach (glob("../../class/*.php") as $filename) {
    include_once($filename);
 }
@@ -64,7 +64,7 @@ if(isset($_SESSION['usuario']))
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
@@ -87,7 +87,7 @@ if(isset($_SESSION['usuario']))
       ?>
       <td><input type="text" name="vacantes" value="<?php echo $vacantes;?>" class="xs"></input></td><td><?php if(isset($msg2)) echo '<span class="error">'.$msg2.'</span>';?></td>
           <input type="hidden" name="hiddenIdSolicitud" value="<?php echo $_GET['idSolicitud'];?>"></input>
-          <input type="hidden" name="hiddenVacantes" value="60"></input>
+          <input type="hidden" name="hiddenVacantes" value="50"></input>
       <td><input type="submit" name="submit" value="Aceptar"></input></td></tr>
     </form>
   </table>

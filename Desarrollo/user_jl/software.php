@@ -111,14 +111,14 @@ if(isset($_SESSION['usuario']))
   } else {
 		
 		?>
-			<h2>Modificar Software:</h2>
-			<table>
-			<form method="post" name="modificar" target="_self">
-			<tr><td>ID</td><td>Nombre de software</td><td>Versi&oacuten</td></tr>
-			<tr><td><input type="hidden" name="id2" value="<?php echo $dato; ?>"><?php echo $_POST['modifica']; ?></input></td>
-			<td><input type="text" name="nombre2" value="<?php $usuario->obtenerNombreSw($dato); ?>" maxlength="30" class="xl"></input></td>
-			<td><input type="text" name="version2" value="<?php $usuario->obtenerVersionSw($dato); ?>" maxlength="30"></input></td>
-			<td><input id="btt" type="submit" name="modifica" value="Modificar software"></input></td></tr>
+		<h2>Modificar Software:</h2>
+		<table>
+		<form method="post" name="modificar" target="_self">
+		<tr><td>ID</td><td>Nombre de software</td><td>Versi&oacuten</td></tr>
+		<tr><td><input type="hidden" name="id2" value="<?php echo $dato; ?>"><?php echo $_POST['modifica']; ?></input></td>
+		<td><input type="text" name="nombre2" value="<?php $usuario->obtenerNombreSw($dato); ?>" maxlength="30" class="xl"></input></td>
+		<td><input type="text" name="version2" value="<?php $usuario->obtenerVersionSw($dato); ?>" maxlength="30"></input></td>
+		<td><input id="btt" type="submit" name="modifica" value="Modificar software"></input></td></tr>
         </form>
         </table>
 		<?php
@@ -156,3 +156,4 @@ else
   header("Location: ../index.php");
   exit();
 }
+?>

@@ -36,7 +36,7 @@ if(isset($_SESSION['usuario']))
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
@@ -55,9 +55,10 @@ if(isset($_SESSION['usuario']))
     elseif(isset($_GET['otros']) && $_GET['otros'] == 'si')
     {
       echo '<h2>Secciones de otras carreras</h2>';
+	  $regimen = obtenerRegimenCarrera($_SESSION['carrera']);
       if(isset($msg2))
         echo '<span class="error">'.$msg2.'</span>';
-      verSeccionesCreadasOtros($_GET['codigoRamo'],$_SESSION['codigoSemestre'],$_SESSION['carrera']);
+      verSeccionesCreadasOtros($_GET['codigoRamo'],$_SESSION['codigoSemestre'],$_SESSION['carrera'],$regimen);
     }
     else
       echo 'Malo';

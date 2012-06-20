@@ -7,21 +7,20 @@ if(isset($_SESSION['usuario']))
 {
   $usuario = unserialize($_SESSION['usuario']);
   if(get_class($usuario) == 'jefeDeCarrera') {
-    $usuario = new JefeDeLaboratorio($usuario->getNombre(),$usuario->getNombreUsuario(),$usuario->getRut());
+    $usuario = new departamento($usuario->getNombre(),$usuario->getNombreUsuario(),$usuario->getRut());
     $_SESSION['usuario'] = serialize($usuario);
+    $_SESSION['carrera'] = NULL;
+    $_SESSION['codigoSemestre'] = NULL;
   }
 
-  if(isset($_POST['cambiarCarrera']) && $_POST['cambiarCarrera'] == 'CAMBIAR CARRERA') {
-    $_SESSION['carrera'] = null;
-    $_SESSION['codigoSemestre'] = null;
-    header("Location: ../home.php");
-    exit();
-  }  
-  ?>
+  if($_SESSION['tipoUsuario'] == 4)
+  {
+?>
+<!DOCTYPE HTML>
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
@@ -80,7 +79,7 @@ if(isset($_SESSION['usuario']))
                                                 var scc = '<span class="error">*Horario asignado.</span>';
                                                 var err4 = '<span class="error">*Horario no asignado, intentelo más tarde.</span>';
                                                 var resp;
-                                                resp = asignarHorario($(source).attr('id'),$(this).attr('id'));
+                                                resp = asignarHorarioDepto($(source).attr('id'),$(this).attr('id'));
                                                 if(resp == '-2')
                                                 {
                                                   document.getElementById("resp").innerHTML=err1;
@@ -110,6 +109,7 @@ if(isset($_SESSION['usuario']))
 			});
 		});
 	</script>
+
 </head>
 
 <body>
@@ -118,79 +118,69 @@ if(isset($_SESSION['usuario']))
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="../index.php">Universidad<span class="logo_colour"> Andr&eacutes Bello</span></a></h1>
-          <h2>Herramienta de programaci&oacuten de horarios.</h2>
+          <h1><a href="">Universidad<span class="logo_colour"> Andrés Bello</span></a></h1>
+          <h2>Herramienta de programación de horarios.</h2>
         </div>
       </div>
       <div id="menubar">
         <ul id="menu">
-          <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
-          <li><a href="jefelab.php">Home</a></li>
-          <li><a href="laboratorios.php">Laboratorios</a></li>
-          <li><a href="software.php">Software</a></li>
-          <li><a href="asignaturas.php">Asignaturas</a></li>
-		  <li class="selected"><a href="horariolab.php">Horario Laboratorios</a></li>
-          <!--<li><a href="contacto.php">Contacto</a></li>-->
+          <li><a href="depto.php">Ramos</a></li>
+          <li><a href="seccion.php">Secciones</a></li>
+		  <li class="selected"><a href="horario.php">Horario</a></li>
+          <li><a href="tipos.php">Tipos</a></li>
           <li><a href="../logout.php">Logout</a></li>
         </ul>
       </div>
     </div>
-    <div id="content">
+    <div id="site_content">
+      <div id="content">
         <!-- insert the page content here -->
         <h2>Horario</h2>
         <div>
         <?php
-          $numeroSemestres = numeroSemestres($_SESSION['carrera']);
-          echo '<table class="centerTable"><tr>';
-          for($i = 0;$i<$numeroSemestres;$i++)
-          {
-            if(isset($_GET['numeroSemestre']) && $_GET['numeroSemestre'] == ($i+1))
-              echo '<td class="dc"><a href="horario.php?numeroSemestre='.($i+1).'">'.($i+1).'</a></td>';
-            else
-              echo '<td><a href="horario.php?numeroSemestre='.($i+1).'">'.($i+1).'</a></td>';
-          }
-          echo '</tr></table>';
 
-          echo '<div class="up">';
-          if(isset($_GET['numeroSemestre']))
-            verClasesSinHorarioSemestre($_SESSION['carrera'],$_SESSION['codigoSemestre'],$_GET['numeroSemestre']);
-          elseif(isset($_POST['numeroSemestre']))
-            verClasesSinHorarioSemestre($_SESSION['carrera'],$_SESSION['codigoSemestre'],$_POST['numeroSemestre']);
+		  echo '<table class="centerTable"><tr>';
+          if(isset($_GET['regimen']) && ($_GET['regimen'] == 'D' || $_GET['regimen'] == 'V'))
+		  {
+              $regimen = $_GET['regimen'];
+			  if($regimen == 'D')
+			    echo '<td class="dc"><a href="horario.php?regimen=D">Diurno</a></td><td><a href="horario.php?regimen=V">Vespertino</a></td>';
+			  else
+			    echo '<td><a href="horario.php?regimen=D">Diurno</a></td><td class="dc"><a href="horario.php?regimen=V">Vespertino</a></td>';
+		  }
           else
-            verClasesSinHorarioSemestre($_SESSION['carrera'],$_SESSION['codigoSemestre'],1);
+		  {
+		    $regimen = 'D';
+            echo '<td class="dc"><a href="horario.php?regimen=D">Diurno</a></td><td><a href="horario.php?regimen=V">Vespertino</a></td>';
+		  }
+          echo '</tr></table>';
+		
+          echo '<div class="up">';
+            verClasesSinHorarioDepto($regimen);
           echo '</div>';
 
+		  echo '<div class="last"><tr></tr></div>';
           echo '<div class="bin"><table><tr><td class="drop" style="border: 1px black solid;">Borrar el horario<br>de una clase</td></tr></table></div>';
 
           echo '<div id="resp"></div>';
  
-          if(isset($_GET['numeroSemestre']) || (isset($_POST['submit']) && $_POST['submit'] == 'Cambiar' && isset($_POST['numeroSemestre'])))
-          {
-            if(isset($_GET['numeroSemestre'])) 
-            {
-              verHorario($_SESSION['carrera'],$_SESSION['codigoSemestre'],$_GET['numeroSemestre']);
+          verHorarioDepto($regimen);
               echo '</div>';
-            }
-            elseif(isset($_POST['submit']) && $_POST['submit'] == 'Cambiar' && isset($_POST['numeroSemestre']))
-            {
-              verHorario($_SESSION['carrera'],$_SESSION['codigoSemestre'],$_POST['numeroSemestre']);
-              echo '</div>';
-            }
-          }
+			  
+		  echo '<table class="centerTable"><tr>';
+          if(isset($_GET['regimen']) && ($_GET['regimen'] == 'D' || $_GET['regimen'] == 'V'))
+		  {
+              $regimen = $_GET['regimen'];
+			  if($regimen == 'D')
+			    echo '<td class="dc"><a href="horario.php?regimen=D">Diurno</a></td><td><a href="horario.php?regimen=V">Vespertino</a></td>';
+			  else
+			    echo '<td><a href="horario.php?regimen=D">Diurno</a></td><td class="dc"><a href="horario.php?regimen=V">Vespertino</a></td>';
+		  }
           else
-          {
-            verHorario($_SESSION['carrera'],$_SESSION['codigoSemestre'],1);
-            echo '</div>';
-          }   
-
-          echo '<table class="centerTable"><tr>';
-          for($i = 0;$i<$numeroSemestres;$i++)
-          {
-            if(isset($_GET['numeroSemestre']) && $_GET['numeroSemestre'] == ($i+1))
-              echo '<td class="dc"><a href="horario.php?numeroSemestre='.($i+1).'">'.($i+1).'</a></td>';
-            else
-              echo '<td><a href="horario.php?numeroSemestre='.($i+1).'">'.($i+1).'</a></td>';
-          }
+		  {
+		    $regimen = 'D';
+            echo '<td class="dc"><a href="horario.php?regimen=D">Diurno</a></td><td><a href="horario.php?regimen=V">Vespertino</a></td>';
+		  }
           echo '</tr></table>';
         ?>
         <br><br>
@@ -198,16 +188,35 @@ if(isset($_SESSION['usuario']))
     </div>
     <div id="content_footer"></div>
     <div id="footer">
+    <?php
+      if(($_SESSION['tipoUsuario'] == 1 || $_SESSION['tipoUsuario'] == 3) && !is_null($_SESSION['carrera']) &&$_SESSION['nroCarrera'] > 1) {
+        echo '<form method="post" name="cambiarCarrera" target="_self"><input type="submit" name="cambiarCarrera" value="CAMBIAR CARRERA" class="inp"></input></form>';
+        $j = 1;
+      }
+      if($_SESSION['tipoUsuario'] == 2 || $_SESSION['tipoUsuario'] == 3) {
+        if(isset($j) && $j == 1)
+          echo ' / ';
+        echo '<a href="../user_admin/admin.php">Modo administrador</a>';
+      }
+    ?>
     </div>
   </div>
+  <!--<script type='text/javascript' src='../js/jquery.js'></script>-->
+  <script type='text/javascript' src='../js/jquery.simplemodal.js'></script>
+  <!--<script type='text/javascript' src='../js/horario.js'></script>-->
+  <script type='text/javascript' src='../js/bsc.js'></script>
 </body>
 </html>
-
 <?php
+  }
+  else
+  {
+    header("Location: index.php");
+    exit();
+  }
 }
 else
 {
-  header("Location: ../index.php");
+  header("Location: index.php");
   exit();
 }
-?>

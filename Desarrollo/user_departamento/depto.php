@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 foreach (glob("../class/*.php") as $filename) {
    include_once($filename);
 }
@@ -20,7 +20,19 @@ if(isset($_SESSION['usuario']))
       {
         if($_POST['codigo'] != '' && $_POST['nombre'] != '' && $_POST['tipo'] != 0 && $_POST['periodo'] != 0 && $_POST['teo'] != '' && $_POST['ayu'] != '' && $_POST['lab'] != '' && $_POST['tall'] != '' && $_POST['cre'] != '')
         {
-          $answer = $usuario->agregarRamoDepartamento($_POST['codigo'],$_POST['nombre'],$_POST['tipo'],$_POST['periodo'],$_POST['teo'],$_POST['ayu'],$_POST['lab'],$_POST['tall'],$_POST['cre']);
+		  if(isset($_POST['SepAyu']))
+		    $sepAyu = 1;
+		  else
+		    $sepAyu = 0;
+	      if(isset($_POST['SepLab']))
+		    $sepLab = 1;
+		  else
+		    $sepLab = 0;
+		  if(isset($_POST['SepTal']))
+		    $sepTal = 1;
+		  else
+		    $sepTal = 0;
+          $answer = $usuario->agregarRamoDepartamento($_POST['codigo'],$_POST['nombre'],$_POST['tipo'],$_POST['periodo'],$_POST['teo'],$_POST['ayu'],$_POST['lab'],$_POST['tall'],$_POST['cre'],$sepAyu,$sepLab,$sepTal);
         }
         else
         {
@@ -71,7 +83,7 @@ if(isset($_SESSION['usuario']))
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
@@ -93,6 +105,7 @@ if(isset($_SESSION['usuario']))
         <ul id="menu">
           <li class="selected"><a href="depto.php">Ramos</a></li>
           <li><a href="seccion.php">Secciones</a></li>
+		  <li><a href="horario.php">Horario</a></li>
           <li><a href="tipos.php">Tipos</a></li>
           <li><a href="../logout.php">Logout</a></li>
         </ul>
@@ -110,7 +123,7 @@ if(isset($_SESSION['usuario']))
         <table>
         <tr><td>Codigo</td><td>Nombre</td><td>Tipo</td><td>Periodo</td><td>Teó.</td><td>Ayu.</td><td>Lab.</td><td>Tall.</td><td>Créd.</td><td></td></tr> 
         <form method="post" name="agregar" target="_self">
-            <tr><td><input type="text" name="codigo" value="<?php if(isset($codigoold)) echo $codigoold;?>" maxlength="6" class="m" onkeyup="buscarCodigoRamo(this.value)"></input></td> 
+            <tr><td><input type="text" name="codigo" value="<?php if(isset($codigoold)) echo $codigoold;?>" maxlength="7" class="m" onkeyup="buscarCodigoRamo(this.value)"></input></td> 
             <td><input type="text" name="nombre" value="<?php if(isset($nombreold)) echo $nombreold;?>" maxlength="50"></input></td>
             <td><select name="tipo"><option value="0">Escoger tipo</option>
               <?php obtenerTiposRamo($_SESSION['tipoUsuario']);?></select></td>
@@ -118,9 +131,12 @@ if(isset($_SESSION['usuario']))
                                        <option value="1">Semestral</option>
                                        <option value="2">Trimestral</option></select>
             <td><input type="text" name="teo" value="<?php if(isset($teoold)) echo $teoold;?>" maxlength="2" class="xs"></input></td>
-            <td><input type="text" name="ayu" value="<?php if(isset($ayuold)) echo $ayuold;?>" maxlength="2" class="xs"></input></td>
-            <td><input type="text" name="lab" value="<?php if(isset($labold)) echo $labold;?>" maxlength="2" class="xs"></input></td>
-            <td><input type="text" name="tall" value="<?php if(isset($tallold)) echo $tallold;?>" maxlength="2" class="xs"></input></td>
+            <td><br><input type="text" name="ayu" value="<?php if(isset($ayuold)) echo $ayuold;?>" maxlength="2" class="xs"></input>
+			<br>Sep <input type="checkbox" name="SepAyu" value="1"></input></td></td>
+            <td><br><input type="text" name="lab" value="<?php if(isset($labold)) echo $labold;?>" maxlength="2" class="xs"></input>
+			<br>Sep <input type="checkbox" name="SepLab" value="1"></input></td></td>
+            <td><br><input type="text" name="tall" value="<?php if(isset($tallold)) echo $tallold;?>" maxlength="2" class="xs"></input>
+			<br>Sep <input type="checkbox" name="SepTal" value="1"></input></td></td>
             <td><input type="text" name="cre" value="<?php if(isset($creold)) echo $creold;?>" maxlength="2" class="xs"></input></td>
             <td><?php if(isset($codigoold))echo '<input type="submit" name="agrega" value="Agregar" id="btt">'; else echo '<input type="submit" name="agrega" value="Agregar" id="btt" disabled>';?></input></td></tr>
             <tr><td><div id="existe"><?php if(isset($codigoerror)) echo '<td><span class="error">'.$codigoerror.'</span></td>';?></div></td>
@@ -153,8 +169,10 @@ if(isset($_SESSION['usuario']))
   <script type='text/javascript' src='../js/jquery.js'></script> 
   <script type='text/javascript' src='../js/jquery.simplemodal.js'></script> 
   <script type='text/javascript' src='../js/bsc.js'></script>
-  <script type='text/javascript' src='../js/js.js'></script></body>
-</html><?php
+  <script type='text/javascript' src='../js/js.js'></script>
+</body>
+</html>
+<?php
   }
   else
   {

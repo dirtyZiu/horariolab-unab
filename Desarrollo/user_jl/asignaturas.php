@@ -11,26 +11,24 @@ if(isset($_SESSION['usuario']))
     $_SESSION['usuario'] = serialize($usuario);
   }    
 
-    if(isset($_POST['agrega']) && $_POST['agrega'] == 'Agregar')
+    if(isset($_POST['modifica']))
   {
-	if(isset($_POST['codigo']) && $_POST['codigo'] != '')
-    {
-	if(isset($_POST['teoria'])) $teo = 'si'; else $teo = 'no';
-	if(isset($_POST['ayudantia'])) $ayu = 'si'; else $ayu = 'no';
-	if(isset($_POST['laboratorio'])) $lab = 'si'; else $lab = 'no';
-	if(isset($_POST['taller'])) $tal = 'si'; else $tal = 'no';
-     $answer = $usuario->agregarAsigCodigo($_POST['codigo'],$teo,$ayu,$lab,$tal);
-    }
-    else
-    {
-      if($_POST['codigo'] == '')
+	if($_POST['modifica'] == 'Agregar'){
+		if(isset($_POST['codigo']) && $_POST['codigo'] != '')
+		{
+		$answer = $usuario->agregarAsigConLab($_POST['codigo']);
+		}
+		else
+		{
+		if($_POST['codigo'] == '')
         $codigoerror = '*Debe ingresar el codigo de la asignatura';
-    }
+		}
+	}
   }
   
         if(isset($_POST['elimina'])&& $_POST['elimina'] == 'Eliminar')
   {
-	$answer = $usuario->eliminarRamoLab($_POST['datoCodigo']);
+	$answer = $usuario->eliminarRamoLab($_POST['codigo']);
   }
 
 
@@ -75,14 +73,23 @@ if(isset($_SESSION['usuario']))
     <div id="site_content">
       <div id="content">
 	  	<?php if(isset($answer)) echo '<span class="error">'.$answer.'</span>';?>
-        <!-- Inicio Campo Listar -->
-        <h1>Lista de Asignaturas que usan Laboratorio</h1>
-		<?php
-		$usuario->listarAsignaturasUsanLab();
-		?>
-		<!-- Fin Campo Listar -->
 		
-		<!-- Inicio Campo Añadir -->
+				<!-- Inicio Campo Añadir -->
+		<h1>A&ntildeadir Asignaturas que usan Laboratorio</h1>
+		<table>
+        <form method="post" name="agregar" target="_self">
+          <tr><td>C&oacutedigo</td></tr>
+          <tr>
+		  <td><input type="text" name="codigo" value="" maxlength="11" class="xl"></input></td>
+          <td><input id="btt" type="submit" name="modifica" value="Agregar"></input></td>
+		  </tr>		  
+          <tr><td><?php if(isset($codigoerror)) echo '<span class="error">'.$codigoerror.'</span>';?></td>
+          </tr>		  
+        </form>
+        </table>
+		<!-- Fin Campo Añadir -->
+		
+		<!-- Inicio Respaldo Campo Añadir
 		<h1>A&ntildeadir Asignaturas que usan Laboratorio</h1>
 		<table>
         <form method="post" name="agregar" target="_self">
@@ -99,7 +106,51 @@ if(isset($_SESSION['usuario']))
           </tr>		  
         </form>
         </table>
-		<!-- Fin Campo Añadir -->
+		 Fin Respaldo Campo Añadir -->
+		 
+		 <!-- Inicio Modificar Horas que usan Lab -->
+<?php
+		if(isset($_POST['agrega']) || isset($_POST['modifica']))
+		{	
+		if(!(isset($answer))) $answer = "";
+		
+		if(isset($codigoerror) || $answer == "*Codigo no existe." || $answer == "*Asignatura no agregada.")
+		{			
+		} else {		
+		if ($_POST['modifica'] == "Modificar ramo"){
+		$teo = 'no';
+		$ayu = 'no';
+		$lab = 'no';
+		$tal = 'no';
+		if(isset($_POST['teoria'])) $teo = 'si';
+		if(isset($_POST['ayudantia'])) $ayu = 'si';
+		if(isset($_POST['laboratorio'])) $lab = 'si';
+		if(isset($_POST['taller'])) $tal = 'si';
+		$answer = $usuario->modificarRamoLab($_POST['codigo'],$teo,$ayu,$lab,$tal);		
+	}else{
+
+?>
+		<span id='modificar'><h2>Modificar Horas que usan Laboratorios</h2></span>
+		 <form method="post" name="agregar" target="_self"><table>
+          <tr><td>C&oacutedigo: </td><td> <?php echo $_POST['codigo']; ?> </td></tr>
+		  <?php
+		  $usuario->formModificarRamo($_POST['codigo']);	  
+		  ?>
+		  </table></form>
+<?php
+		}
+		}
+		}
+?>
+		 <!-- Fin Modificar Horas que usan Lab -->
+		
+        <!-- Inicio Campo Listar -->
+        <h1>Lista de Asignaturas que usan Laboratorio</h1>
+		<?php
+		$usuario->listarAsignaturasUsanLab();
+		?>
+		<!-- Fin Campo Listar -->
+		
       </div>
     </div>
   </div>

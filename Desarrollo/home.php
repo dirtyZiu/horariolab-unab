@@ -9,6 +9,8 @@ if(isset($_SESSION['usuario']))
   if(get_class($usuario) == 'administrador') {
     $usuario = new jefeDeCarrera($usuario->getNombre(),$usuario->getNombreUsuario(),$usuario->getRut());
     $_SESSION['usuario'] = serialize($usuario);
+	$_SESSION['carrera'] = NULL;
+    $_SESSION['codigoSemestre'] = NULL;
   }
 
   if((isset($_POST['submit']) && $_POST['submit'] == 'Elegir') && isset($_POST['codigoCarrera']) && isset($_POST['codigoSemestre'])) {
@@ -32,7 +34,7 @@ if(isset($_SESSION['usuario']))
   
   if($_SESSION['tipoUsuario'] == 1 || $_SESSION['tipoUsuario'] == 3)
   {
-  
+
 ?>
 <!DOCTYPE HTML>
 <html>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 foreach (glob("../class/*.php") as $filename) {
    include_once($filename);
 }
@@ -49,7 +49,7 @@ if(isset($_SESSION['usuario']))
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
@@ -64,7 +64,7 @@ if(isset($_SESSION['usuario']))
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="index.php">Universidad<span class="logo_colour"> Andrés Bello</span></a></h1>
+          <h1><a href="">Universidad<span class="logo_colour"> Andrés Bello</span></a></h1>
           <h2>Herramienta de programación de horarios.</h2>
         </div>
       </div>

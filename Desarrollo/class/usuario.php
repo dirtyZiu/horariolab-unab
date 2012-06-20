@@ -80,15 +80,13 @@ class usuario {
         $_SESSION['tipoUsuario'] = $tipo;
         $login = true;  
       }
-	  
-      elseif($tipo == 5)
+elseif($tipo == 5)
       {
         $jdl = new JefeDeLaboratorio($nombre,$this->getNombreUsuario(),$rut);
         $_SESSION['usuario'] = serialize($jdl);
         $_SESSION['tipoUsuario'] = $tipo;
         $login = true;  
       }
-	  
     }
     $res->free_result();
     if(!isset($login))
@@ -204,10 +202,10 @@ class administrador extends usuario {
     } 
   }
 
-  public function agregarRamo($codigo,$nombre,$tipo,$periodo,$teo,$ayu,$lab,$tall,$cre) {
+  public function agregarRamo($codigo,$nombre,$tipo,$periodo,$teo,$ayu,$lab,$tall,$cre,$sepAyu,$sepLab,$sepTal) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-    $sql = "INSERT INTO Ramo(Codigo,Nombre,Teoria,Tipo,Periodo,Ayudantia,Laboratorio,Taller,Creditos) VALUES('{$codigo}','{$nombre}','{$teo}','{$tipo}','{$periodo}','{$ayu}','{$lab}','{$tall}','{$cre}')";
+    $sql = "INSERT INTO Ramo(Codigo,Nombre,Teoria,Tipo,Periodo,Ayudantia,Laboratorio,Taller,Creditos,SepAyu,SepLab,SepTal) VALUES('{$codigo}','{$nombre}','{$teo}','{$tipo}','{$periodo}','{$ayu}','{$lab}','{$tall}','{$cre}','{$sepAyu}','{$sepLab}','{$sepTal}')";
     if(($mysqli->query($sql)) == true)
     {
       $answer = '*Ramo agregado con éxito.';
@@ -451,17 +449,19 @@ class administrador extends usuario {
   public function verProfesores() {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-    $sql = "SELECT p.Rut_Profesor,p.Nombre FROM Profesor AS p";
+    $sql = "SELECT p.Rut_Profesor,p.Nombre,pg.Grado
+	         FROM Profesor AS p
+			 INNER JOIN profesor_grado AS pg ON pg.Id = p.Profesor_Grado";
     $res = $mysqli->prepare($sql);
     $res->execute();
-    $res->bind_result($rut,$nombre);
-    echo '<table><tr><td>Rut</td><td>Nombre</td><td>Relacionar</td><td>Eliminar</td></tr>';
+    $res->bind_result($rut,$nombre,$profesorGrado);
+    echo '<table><tr><td>Rut</td><td>Nombre</td><td>Grado</td><td>Modificar</td><td>Eliminar</td></tr>';
     $flag = 0;
     while($res->fetch())
     {
       if($flag == 0)
         $flag = 1;
-      echo '<tr><td>'.$rut.'</td><td>'.$nombre.'</td><td><a href="">Relacionar</a></td><td><a href="">Eliminar</a></td>';
+      echo '<tr><td>'.$rut.'</td><td>'.$nombre.'</td><td>'.$profesorGrado.'</td><td><a id="'.$rut.'" class="modificarProfesor" href="">Modificar</a></td><td><a href="">Eliminar</a></td>';
     }
     if($flag == 0)
       echo '<tr><td>No hay profesores.</td><td></td><td></td></tr></table>';
@@ -754,12 +754,12 @@ class jefeDeCarrera extends usuario {
     $res2->free_result();
 
     $mysqli3 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-    $sql3 = "SELECT r.Teoria,r.Ayudantia,r.Laboratorio,r.Taller
+    $sql3 = "SELECT r.Teoria,r.Ayudantia,r.Laboratorio,r.Taller,r.SepAyu,r.SepLab,r.SepTal
               FROM Ramo AS r
              WHERE r.Codigo = '{$codigoRamo}';";
     $res3 = $mysqli3->prepare($sql3);
     $res3->execute();
-    $res3->bind_result($teoria,$ayudantia,$laboratorio,$taller);
+    $res3->bind_result($teoria,$ayudantia,$laboratorio,$taller,$sepAyu,$sepLab,$sepTal);
     $res3->fetch();
     $res3->free_result();
 
@@ -772,7 +772,7 @@ class jefeDeCarrera extends usuario {
     }
     else
       $numeroSeccion++;
-    $sql4 = "INSERT INTO Seccion(Numero_Seccion,NRC,Codigo_Ramo,Codigo_Carrera,Codigo_Semestre,Regimen,Vacantes) VALUES('{$numeroSeccion}',1524,'{$codigoRamo}','{$codigoCarrera}','{$codigoSemestre}','{$regimen}',60);";
+    $sql4 = "INSERT INTO Seccion(Numero_Seccion,NRC,Codigo_Ramo,Codigo_Carrera,Codigo_Semestre,Regimen,Vacantes) VALUES('{$numeroSeccion}',1524,'{$codigoRamo}','{$codigoCarrera}','{$codigoSemestre}','{$regimen}',50);";
     if(($mysqli4->query($sql4)) == true)
     {
       $answer = '*Sección creada.';
@@ -808,6 +808,12 @@ class jefeDeCarrera extends usuario {
         $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
         $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Ayudantia','{$idSeccion}','{$codigoSemestre}');";
         $mysqliteo->query($sqlteo);
+		if($sepAyu == 1)
+		{
+		  $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+          $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Ayudantia','{$idSeccion}','{$codigoSemestre}');";
+          $mysqliteo->query($sqlteo);
+		}
       }
     }
     $laboratorio = $laboratorio/2;
@@ -817,7 +823,13 @@ class jefeDeCarrera extends usuario {
         $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
         $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Laboratorio','{$idSeccion}','{$codigoSemestre}');";
         $mysqliteo->query($sqlteo);
-      }
+        if($sepLab == 1)
+	    {
+	      $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+          $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Laboratorio','{$idSeccion}','{$codigoSemestre}');";
+          $mysqliteo->query($sqlteo);
+	    }
+	  }
     }
     $taller = $taller/2;
     if($taller > 0) {
@@ -826,7 +838,13 @@ class jefeDeCarrera extends usuario {
         $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
         $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Taller','{$idSeccion}','{$codigoSemestre}');";
         $mysqliteo->query($sqlteo);
-      }
+        if($sepTal == 1)
+	    {
+	      $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+          $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Taller','{$idSeccion}','{$codigoSemestre}');";
+          $mysqliteo->query($sqlteo);
+	    }
+	  }
     }
 
     return $answer;
@@ -902,7 +920,7 @@ class jefeDeCarrera extends usuario {
     $sql = "CALL verSolicitudesMias('{$codigoCarrera}','{$codigoSemestre}')";
     $res = $mysqli->prepare($sql);
     $res->execute();
-    $res->bind_result($idSolicitud,$codigoRamo,$nombreRamo,$carreraDestinataria,$vacantes,$vacantesAsignadas,$fecha_envio,$fechaRespuesta,$estado);
+    $res->bind_result($idSolicitud,$codigoRamo,$nombreRamo,$carreraDestinataria,$vacantes,$vacantesAsignadas,$fecha_envio,$fechaRespuesta,$estado,$seccionAsignada);
     echo '<table><tr><td class="dc">Esperando</td></tr>';
     echo '<tr><td class="dc">Id Solicitud</td><td class="dc">Código ramo</td><td class="dc">Nombre ramo</td><td class="dc">Carrera destinataria</td><td class="dc"># vacantes</td><td class="dc">Fecha envio</td><td class="dc">Estado</td><td class="dc">Modificar</td><td class="dc">Eliminar</td></tr>';
     $flag = 0;
@@ -921,9 +939,9 @@ class jefeDeCarrera extends usuario {
           $aceptadas = 1;
           echo '<tr></tr>';
           echo '<tr><td class="dc">Aceptadas</td></tr>';
-          echo '<tr><td class="dc">Id Solicitud</td><td class="dc">Código ramo</td><td class="dc">Nombre ramo</td><td class="dc">Carrera solicitante</td><td class="dc">Vacantes pedidas</td><td class="dc">Vacantes asignadas</td><td class="dc">Fecha envio</td><td class="dc">Fecha respuesta</td><td class="dc">Estado</td></tr>';
+          echo '<tr><td class="dc">Id Solicitud</td><td class="dc">Código ramo</td><td class="dc">Nombre ramo</td><td class="dc">Carrera solicitante</td><td class="dc">Sección asignada</td><td class="dc">Vacantes pedidas</td><td class="dc">Vacantes asignadas</td><td class="dc">Fecha envio</td><td class="dc">Fecha respuesta</td><td class="dc">Estado</td></tr>';
         }
-        echo '<tr><td>'.$idSolicitud.'</td><td>'.$codigoRamo.'</td><td>'.$nombreRamo.'</td><td>'.$carreraDestinataria.'</td><td class="mid">'.$vacantes.'</td><td class="mid">'.$vacantesAsignadas.'</td><td>'.$fecha_envio.'</td><td>'.$fechaRespuesta.'</td><td>Aceptada</td></tr>';
+        echo '<tr><td>'.$idSolicitud.'</td><td>'.$codigoRamo.'</td><td>'.$nombreRamo.'</td><td>'.$carreraDestinataria.'</td><td class="mid">'.$seccionAsignada.'</td><td class="mid">'.$vacantes.'</td><td class="mid">'.$vacantesAsignadas.'</td><td>'.$fecha_envio.'</td><td>'.$fechaRespuesta.'</td><td>Aceptada</td></tr>';
       }
       elseif($estado == 3)
       {
@@ -1121,11 +1139,11 @@ class departamento extends usuario {
     unset($this);
   }
 
-  public function agregarRamoDepartamento($codigo,$nombre,$tipo,$periodo,$teo,$ayu,$lab,$tall,$cre)
+  public function agregarRamoDepartamento($codigo,$nombre,$tipo,$periodo,$teo,$ayu,$lab,$tall,$cre,$sepAyu,$sepLab,$sepTal)
   {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-    $sql = "INSERT INTO Ramo(Codigo,Nombre,Teoria,Tipo,Periodo,Ayudantia,Laboratorio,Taller,Creditos) VALUES('{$codigo}','{$nombre}','{$teo}','{$tipo}','{$periodo}','{$ayu}','{$lab}','{$tall}','{$cre}')";
+    $sql = "INSERT INTO Ramo(Codigo,Nombre,Teoria,Tipo,Periodo,Ayudantia,Laboratorio,Taller,Creditos,SepAyu,SepLab,SepTal) VALUES('{$codigo}','{$nombre}','{$teo}','{$tipo}','{$periodo}','{$ayu}','{$lab}','{$tall}','{$cre}','{$sepAyu}','{$sepLab}','{$sepTal}')";
     if(($mysqli->query($sql)) == true)
     {
       $answer = '*Ramo agregado.';
@@ -1137,11 +1155,11 @@ class departamento extends usuario {
     return $answer;
   }
 
-  public function crearTipoDeRamo($tipo,$abreviacion)
+  public function crearTipoDeRamo($tipo,$abreviacion,$boolean)
   {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-    $sql = "INSERT INTO Ramo_Tipo(Tipo,Abreviacion) VALUES('{$tipo}','{$abreviacion}');";
+    $sql = "INSERT INTO Ramo_Tipo(Tipo,Abreviacion,soloDepto) VALUES('{$tipo}','{$abreviacion}','{$boolean}');";
     if(($mysqli->query($sql)) == true)
     {
       $answer = '*Tipo creado.';
@@ -1152,24 +1170,125 @@ class departamento extends usuario {
     }
     return $answer;
   }
+  
+  public function crearSeccionDepartamento($codigoRamo,$codigoSemestre,$regimen)
+  {
+    $codigoCarrera = 'DEPTO';
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli3 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql3 = "SELECT r.Teoria,r.Ayudantia,r.Laboratorio,r.Taller,r.SepAyu,r.SepLab,r.SepTal
+              FROM Ramo AS r
+             WHERE r.Codigo = '{$codigoRamo}';";
+    $res3 = $mysqli3->prepare($sql3);
+    $res3->execute();
+    $res3->bind_result($teoria,$ayudantia,$laboratorio,$taller,$sepAyu,$sepLab,$sepTal);
+    $res3->fetch();
+    $res3->free_result();
+
+    if($regimen == 'D')
+      $numeroSeccion = 1;
+    elseif($regimen == 'V')
+      $numeroSeccion = 100;
+	  
+    $mysqli4 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql4 = "INSERT INTO Seccion(Numero_Seccion,NRC,Codigo_Ramo,Codigo_Carrera,Codigo_Semestre,Regimen,Vacantes) VALUES('{$numeroSeccion}',1524,'{$codigoRamo}','{$codigoCarrera}','{$codigoSemestre}','{$regimen}',60);";
+    if(($mysqli4->query($sql4)) == true)
+    {
+      $answer = '*Sección creada.';
+    }
+    else
+    {
+      $answer = '*Sección no creada.';
+    }
+
+    $mysqli5 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql5 = "SELECT s.Id
+              FROM Seccion AS s
+             WHERE s.Numero_Seccion = '{$numeroSeccion}' AND s.Codigo_Ramo = '{$codigoRamo}' AND s.Codigo_Carrera = '{$codigoCarrera}' AND s.Codigo_Semestre = '{$codigoSemestre}';";
+    $res5 = $mysqli5->prepare($sql5);
+    $res5->execute();
+    $res5->bind_result($idSeccion);
+    $res5->fetch();
+    $res5->free_result();
+
+    $teoria = $teoria/2;
+    if($teoria > 0) {
+      for($i = 0;$i<$teoria;$i++)
+      {
+        $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+        $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Teoria','{$idSeccion}','{$codigoSemestre}');";
+        $mysqliteo->query($sqlteo);
+      } 
+    }
+    $ayudantia = $ayudantia/2;
+    if($ayudantia > 0) {
+      for($i = 0;$i<$ayudantia;$i++)
+      {
+        $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+        $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Ayudantia','{$idSeccion}','{$codigoSemestre}');";
+        $mysqliteo->query($sqlteo);
+        if($sepAyu == 1)
+		{
+		  $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+          $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Ayudantia','{$idSeccion}','{$codigoSemestre}');";
+          $mysqliteo->query($sqlteo);
+		}
+	  }
+    }
+    $laboratorio = $laboratorio/2;
+    if($laboratorio > 0) {
+      for($i = 0;$i<$laboratorio;$i++)
+      {
+        $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+        $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Laboratorio','{$idSeccion}','{$codigoSemestre}');";
+        $mysqliteo->query($sqlteo);
+        if($sepLab == 1)
+		{
+		  $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+          $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Laboratorio','{$idSeccion}','{$codigoSemestre}');";
+          $mysqliteo->query($sqlteo);
+		}
+	  }
+    }
+    $taller = $taller/2;
+    if($taller > 0) {
+      for($i = 0;$i<$taller;$i++)
+      {
+        $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+        $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Taller','{$idSeccion}','{$codigoSemestre}');";
+        $mysqliteo->query($sqlteo);
+        if($sepTal == 1)
+		{
+		  $mysqliteo = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+          $sqlteo = "INSERT INTO Clase(Clase_Tipo,Seccion_Id,Codigo_Semestre) VALUES('Taller','{$idSeccion}','{$codigoSemestre}');";
+          $mysqliteo->query($sqlteo);
+		}
+	  }
+    }
+
+    return $answer;
+  }
+  
+  
+  
 }
 
 class JefeDeLaboratorio extends usuario {
 
-  function __construct($nombre,$nombreUsuario,$rut) {
+	function __construct($nombre,$nombreUsuario,$rut) {
     $this->nombre = $nombre;
     $this->nombreUsuario = $nombreUsuario;
     $this->rut = $rut;
   }
 
-  function __destruct() {
+	function __destruct() {
     unset($this->nombre);
     unset($this->nombreUsuario);
     unset($this->rut);
     unset($this);
   }
   
-  public function crearLaboratorio($codEdificio,$nSala) {
+	public function crearLaboratorio($codEdificio,$nSala) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
     $sql = "INSERT INTO laboratorio(edificio,sala) VALUES ('{$codEdificio}','{$nSala}');";
@@ -1184,7 +1303,7 @@ class JefeDeLaboratorio extends usuario {
     return $answer;
   }
   
-   public function modificarLaboratorio($idLab,$codEdificio,$nSala) {
+	public function modificarLaboratorio($idLab,$codEdificio,$nSala) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
 	$sql = "UPDATE laboratorio SET edificio='{$codEdificio}',sala='{$nSala}' WHERE id_lab='{$idLab}';";
@@ -1199,7 +1318,7 @@ class JefeDeLaboratorio extends usuario {
     return $answer;
   }
   
-  public function eliminarLaboratorio($idLab) { 
+	public function eliminarLaboratorio($idLab) { 
 	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
     $sql = "DELETE FROM laboratorio WHERE id_lab = '{$idLab}';";
@@ -1214,7 +1333,7 @@ class JefeDeLaboratorio extends usuario {
     return $answer;
 	}
   
-  public function listarLaboratorio() {
+	public function listarLaboratorio() {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
     $sql = "SELECT id_lab, edificio, sala FROM laboratorio";
@@ -1256,6 +1375,7 @@ class JefeDeLaboratorio extends usuario {
       echo '';
     $res->free_result();
 	}
+	
 	public function obtenerEdificioLab($idLab) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
@@ -1277,7 +1397,7 @@ class JefeDeLaboratorio extends usuario {
     $res->free_result();
 	}
   
-  public function crearSoftware($nomSoftware,$verSoftware) {
+	public function crearSoftware($nomSoftware,$verSoftware) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
     $sql = "INSERT INTO software(nom_sw,version) VALUES ('{$nomSoftware}','{$verSoftware}');";
@@ -1292,7 +1412,7 @@ class JefeDeLaboratorio extends usuario {
     return $answer;
   }
   
-  public function modificarSoftware($idSw,$nomSw,$verSw) {
+	public function modificarSoftware($idSw,$nomSw,$verSw) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
 	$sql = "UPDATE software SET nom_sw='{$nomSw}',version='{$verSw}' WHERE id_sw='{$idSw}';";
@@ -1322,7 +1442,7 @@ class JefeDeLaboratorio extends usuario {
     return $answer;
 	}
   
-  public function listarSoftware() {
+	public function listarSoftware() {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
     $sql = "SELECT id_sw, nom_sw, version FROM software";
@@ -1364,7 +1484,8 @@ class JefeDeLaboratorio extends usuario {
       echo '';
     $res->free_result();
 	}
-    	public function obtenerVersionSw($idSw) {
+    	
+	public function obtenerVersionSw($idSw) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
 	$sql = "SELECT version FROM software WHERE id_sw='{$idSw}';";
@@ -1384,6 +1505,7 @@ class JefeDeLaboratorio extends usuario {
       echo '';
     $res->free_result();
 	}
+	
 	public function listarAsignaturasUsanLab(){
 	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
@@ -1398,7 +1520,7 @@ class JefeDeLaboratorio extends usuario {
     {
       if($flag == 0)
         $flag = 1;
-	  echo '<form method="post" name="modificar" target="_self"><input type="hidden" name="datoCodigo" value='.$codigo.' />';
+	  echo '<form method="post" name="modificar" target="_self"><input type="hidden" name="codigo" value='.$codigo.' />';
       echo '<tr><td>'.$codigo.'</td><td>'.$nombre.'</td><td>'.$teo.'</td><td>'.$ayu.'</td><td>'.$lab.'</td><td>'.$tal.'</td><td><input type="submit" name="modifica" value="Modificar" /></td><td><input type="submit" name="elimina" value="Eliminar" /></td></tr>';
 	  echo '</form>';
 	  }
@@ -1408,6 +1530,46 @@ class JefeDeLaboratorio extends usuario {
       echo '</table>';
     $res->free_result();
 	}
+	
+	public function formModificarRamo($vCodigo){	
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+	$sql = "SELECT r.nombre, rl.teoria, rl.ayudantia, rl.laboratorio, rl.taller FROM ramo_usa_lab as rl, ramo as r WHERE rl.Codigo = '{$vCodigo}' AND rl.Codigo = r.Codigo  LIMIT 0,1";
+	$res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($nRamo,$Teo,$Ayu,$Lab,$Tal);
+    $flag = 0;
+	$cambios = '';
+    if($res->fetch() == true)
+    {
+	$res->free_result();
+      if($flag == 0) $flag = 1;
+	  
+	  echo '<tr><td>Nombre: </td><td>'.$nRamo.' <input type="hidden" name="codigo" value='.$vCodigo.' /></td></tr>';
+	  echo '<tr><td colspan=2><b> Horas que usan laboratorios </b></td></tr>';
+	  
+	  if($Teo == 'no') echo '<tr><td>Teoría: </td><td><input type="checkbox" name="teoria" value="si"></input></td></tr>';
+	  elseif ($Teo == 'si') echo '<tr><td>Teoría: </td><td><input type="checkbox" name="teoria" value="si" checked></input></td></tr>';
+	  else echo '<tr><td>Teoría: </td><td><input type="checkbox" name="teoria" value="si" disabled></input></td></tr>';
+	  
+	  if($Ayu == 'no') echo '<tr><td>Ayudantía: </td><td><input type="checkbox" name="ayudantia" value="si"></input></td></tr>';
+	  elseif ($Ayu == 'si') echo '<tr><td>Ayudantía: </td><td><input type="checkbox" name="ayudantia" value="si" checked></input></td></tr>';
+	  else echo '<tr><td>Ayudantía: </td><td><input type="checkbox" name="ayudantia" value="si" disabled></input></td></tr>';
+	  
+	  if($Lab == 'no') echo '<tr><td>Laboratorio: </td><td><input type="checkbox" name="laboratorio" value="si"></input></td></tr>';
+	  elseif ($Lab == 'si') echo '<tr><td>Laboratorio: </td><td><input type="checkbox" name="laboratorio" value="si" checked></input></td></tr>';
+	  else echo '<tr><td>Laboratorio: </td><td><input type="checkbox" name="laboratorio" value="si" disabled></input></td></tr>';
+	  
+	  if($Tal == 'no') echo '<tr><td>Taller: </td><td><input type="checkbox" name="taller" value="si"></input></td></tr>';
+	  elseif ($Tal == 'si') echo '<tr><td>Taller: </td><td><input type="checkbox" name="taller" value="si" checked></input></td></tr>';
+	  else echo '<tr><td>Taller: </td><td><input type="checkbox" name="taller" value="si" disabled></input></td></tr>';
+	  
+	  echo '<tr><td><input id="btt" type="submit" name="modifica" value="Modificar ramo"></input></td></tr>';	  
+    }
+    if($flag == 0) echo '<tr><td colspan=2>Datos no encontrados.</td></tr></table>';
+	$res->free_result();	
+	}
+	
 	public function verificadorRamo($vCodigo){
 	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
@@ -1442,20 +1604,50 @@ class JefeDeLaboratorio extends usuario {
 	  if ($mysqli->query("UPDATE ramo_usa_lab SET taller='' WHERE codigo='{$vCodigo}'") === TRUE)
 		$cambios = $cambios . '<br> *Ramo sin Taller.';
 	  }
-	  return '*Asignatura agregada.' . $cambios; 
+	  return '*Cambios aplicados.' . $cambios; 
     }
     if($flag == 0)
       return 'Error: Código no encontrado.';
 
 	}
 	
-	public function agregarAsigCodigo($varCodigo,$varTeo,$varAyu,$varLab,$varTal){
+	public function modificarRamoLab($varCodigo,$varTeo,$varAyu,$varLab,$varTal){
 	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
     $sql = "SELECT codigo FROM `ramo` WHERE codigo='{$varCodigo}'";
 	$mysqli->query($sql);
     if($mysqli->affected_rows != 0)
     {
+	//$sql = "INSERT INTO ramo_usa_lab(codigo,teoria,ayudantia,laboratorio,taller) VALUES ('{$varCodigo}','{$varTeo}','{$varAyu}','{$varLab}','{$varTal}');";
+	$sql = "UPDATE ramo_usa_lab SET teoria='{$varTeo}', ayudantia='{$varAyu}', laboratorio='{$varLab}', taller='{$varTal}' WHERE codigo='{$varCodigo}';";
+	if($mysqli->query($sql) == true)
+	{
+	$answer = $this->verificadorRamo($varCodigo);
+	}
+	else
+	{
+	$answer = '*Modificación no aplicada.';
+	}
+	
+    }
+    else
+    {
+      $answer = '*Codigo no existe.';
+    }
+    return $answer;
+	}
+	
+	public function agregarAsigConLab($varCodigo){
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "SELECT codigo FROM `ramo` WHERE codigo='{$varCodigo}'";
+	$mysqli->query($sql);
+    if($mysqli->affected_rows != 0)
+    {
+	$varTeo='no';
+	$varAyu='no';
+	$varLab='no';
+	$varTal='no';
 	$sql = "INSERT INTO ramo_usa_lab(codigo,teoria,ayudantia,laboratorio,taller) VALUES ('{$varCodigo}','{$varTeo}','{$varAyu}','{$varLab}','{$varTal}');";
 	if($mysqli->query($sql) == true)
 	{
@@ -1480,11 +1672,11 @@ class JefeDeLaboratorio extends usuario {
     $sql = "DELETE FROM ramo_usa_lab WHERE codigo = '{$varCodigo}';";
 	if(($mysqli->query($sql)) == true)
     {
-      $answer = '*Asignatura borrada.';
+      $answer = "*Asignatura '{$varCodigo}' borrada.";
     }
     else
     {
-      $answer = '*Asignatura no borrada.';
+      $answer = "*Asignatura '{$varCodigo}' no borrada.";
     }
     return $answer;
 	}

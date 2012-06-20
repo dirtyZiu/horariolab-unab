@@ -157,10 +157,11 @@ BEGIN
 END;//
 
 
-CREATE PROCEDURE seccionesCreadasOtroNumero(codigoRamo VARCHAR(6), codigoCarrera VARCHAR(9), codigoSemestre INT)
+CREATE PROCEDURE seccionesCreadasOtroNumero(codigoRamo VARCHAR(6), codigoCarrera VARCHAR(9), codigoSemestre INT, regimen VARCHAR(1))
 BEGIN
   SELECT COUNT(s.NRC)
    FROM Seccion AS s
+   INNER JOIN Carrera AS c ON c.Codigo = s.Codigo_Carrera AND c.Regimen = regimen
   WHERE s.Codigo_Ramo = codigoRamo AND s.Codigo_Carrera != codigoCarrera AND s.Codigo_Semestre = codigoSemestre;
 END;//
 
@@ -194,9 +195,10 @@ END;//
 
 CREATE PROCEDURE verSolicitudesMias(codigoCarrera VARCHAR(9), codigoSemestre INT)
 BEGIN
-  SELECT s.Id,s.Codigo_Ramo,r.Nombre,s.Carrera,s.Vacantes,s.Vacantes_Asignadas,s.Fecha_Envio,s.Fecha_Respuesta,s.Estado
+  SELECT s.Id,s.Codigo_Ramo,r.Nombre,s.Carrera,s.Vacantes,s.Vacantes_Asignadas,s.Fecha_Envio,s.Fecha_Respuesta,s.Estado,sec.Numero_Seccion
    FROM Solicitud AS s
    INNER JOIN Ramo AS r ON r.Codigo = s.Codigo_Ramo
+   INNER JOIN Seccion AS sec ON sec.Id = s.Seccion_Asignada
   WHERE s.Codigo_Semestre = codigoSemestre AND s.Carrera_Solicitante = codigoCarrera ORDER BY s.Estado,s.Fecha_Envio,s.Carrera_Solicitante,s.Codigo_Ramo;
 END;//
 

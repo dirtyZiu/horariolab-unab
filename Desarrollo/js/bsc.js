@@ -48,13 +48,13 @@ jQuery(function ($) {
 
         $('a.relacionar').click(function (e) {
           var codigoRamo = $(this).attr("id");
-          $('<iframe name="" class="ifr" src="secundario/ramosRelacionar.php?codigoRamo=' + codigoRamo + '" scrolling="no" frameborder="0"></iframe>').modal();
+          $('<iframe name="" class="ifr" src="secundario/ramosRelacionar.php?codigoRamo=' + codigoRamo + '" scrolling="yes" frameborder="0"></iframe>').modal();
           return false;
         });
 
         $('a.verMalla').click(function (e) {
           var codigoCarrera = $(this).attr("id");
-          $('<iframe name="" class="ifr" src="secundario/Malla.php?codigoCarrera=' + codigoCarrera + '" scrolling="no" frameborder="0"></iframe>').modal();
+          $('<iframe name="" class="ifr" src="secundario/Malla.php?codigoCarrera=' + codigoCarrera + '" scrolling="yes" frameborder="0"></iframe>').modal();
           return false;
         });
 
@@ -112,4 +112,9 @@ jQuery(function ($) {
           return false;
         }); 
 
+        $('a.modificarProfesor').click(function (e) {
+          var rutProfesor = $(this).attr("id");
+          $('<iframe name="" class="ifr" src="secundario/modificarProfesor.php?rutProfesor=' + rutProfesor + '"></iframe>').modal();
+          return false;
+        });
 });

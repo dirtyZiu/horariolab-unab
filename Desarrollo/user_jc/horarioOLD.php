@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 foreach (glob("../class/*.php") as $filename) {
    include_once($filename);
 }
@@ -25,7 +25,7 @@ if(isset($_SESSION['usuario']))
 <html>
 
 <head>
-  <title>JC Horario</title>
+  <title>HSC - Facultad de Ingeniería</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
@@ -38,7 +38,7 @@ if(isset($_SESSION['usuario']))
 
   <script>
 		$(function(){
-                        $('.bin td.drop').droppable({
+		    $('.bin td.drop').droppable({
                                 onDragEnter:function(){
                                         $(this).addClass('over');
                                 },
@@ -63,6 +63,7 @@ if(isset($_SESSION['usuario']))
                                         }
                                 }
                         });
+		
 			$('.up .item').draggable({
 				revert:true
 			});
@@ -83,7 +84,6 @@ if(isset($_SESSION['usuario']))
                                                 var err3 = '<span class="error">*Este horario tiene una clase de una sección obtenida por solicitud.</span>';
                                                 var scc = '<span class="error">*Horario asignado.</span>';
                                                 var err4 = '<span class="error">*Horario no asignado, intentelo más tarde.</span>';
-												var err5 = '<span class="error">*Este horario tiene una clase de una sección de departamento.</span>';
                                                 var resp;
                                                 resp = asignarHorario($(source).attr('id'),$(this).attr('id'));
                                                 if(resp == '-2')
@@ -111,10 +111,6 @@ if(isset($_SESSION['usuario']))
                                                 {
                                                   document.getElementById("resp").innerHTML=err4;
                                                 }
-												else if(resp == '-3')
-												{
-												  document.getElementById("resp").innerHTML=err5;
-												}
 				}
 			});
 		});
@@ -128,7 +124,7 @@ if(isset($_SESSION['usuario']))
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="">Universidad<span class="logo_colour"> Andrés Bello</span></a></h1>
+          <h1><a href="index.php">Universidad<span class="logo_colour"> Andrés Bello</span></a></h1>
           <h2>Herramienta de programación de horarios.</h2>
         </div>
       </div>
@@ -174,9 +170,8 @@ if(isset($_SESSION['usuario']))
             verClasesSinHorarioSemestre($_SESSION['carrera'],$_SESSION['codigoSemestre'],1);
           echo '</div>';
 
-		  echo '<div class="last"><tr></tr></div>';
-          echo '<div class="bin"><table><tr><td class="drop" style="border: 1px black solid;">Borrar el horario<br>de una clase</td></tr></table></div>';
-
+		  echo '<div class="bin"><table><tr><td class="drop" style="border: 1px black solid;">Borrar el horario<br>de una clase</td></tr></table></div>';
+		  
           echo '<div id="resp"></div>';
  
           if(isset($_GET['numeroSemestre']) || (isset($_POST['submit']) && $_POST['submit'] == 'Cambiar' && isset($_POST['numeroSemestre'])))
