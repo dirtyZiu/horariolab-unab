@@ -2,10 +2,10 @@
 -- version 3.4.10.1
 -- http://www.phpmyadmin.net
 --
--- Host: localhost
--- Generation Time: Jun 19, 2012 at 07:43 PM
--- Server version: 5.5.20
--- PHP Version: 5.3.10
+-- Servidor: localhost
+-- Tiempo de generación: 22-06-2012 a las 09:52:27
+-- Versión del servidor: 5.5.20
+-- Versión de PHP: 5.3.10
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,12 +17,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `hsc`
+-- Base de datos: `hsc`
 --
 
 DELIMITER $$
 --
--- Procedures
+-- Procedimientos
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `abrirSemestreAnterior`(codigoSemestre INT, fecha DATETIME)
 BEGIN
@@ -400,7 +400,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `carrera`
+-- Estructura de tabla para la tabla `carrera`
 --
 
 CREATE TABLE IF NOT EXISTS `carrera` (
@@ -415,7 +415,7 @@ CREATE TABLE IF NOT EXISTS `carrera` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `carrera`
+-- Volcado de datos para la tabla `carrera`
 --
 
 INSERT INTO `carrera` (`Codigo`, `NombreUsuario_JC`, `Nombre_Carrera`, `Periodo`, `Regimen`, `Numero`) VALUES
@@ -430,7 +430,7 @@ INSERT INTO `carrera` (`Codigo`, `NombreUsuario_JC`, `Nombre_Carrera`, `Periodo`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `carrera_tiene_ramos`
+-- Estructura de tabla para la tabla `carrera_tiene_ramos`
 --
 
 CREATE TABLE IF NOT EXISTS `carrera_tiene_ramos` (
@@ -442,7 +442,7 @@ CREATE TABLE IF NOT EXISTS `carrera_tiene_ramos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `carrera_tiene_ramos`
+-- Volcado de datos para la tabla `carrera_tiene_ramos`
 --
 
 INSERT INTO `carrera_tiene_ramos` (`Codigo_Carrera`, `Codigo_Ramo`, `Semestre`) VALUES
@@ -737,7 +737,7 @@ INSERT INTO `carrera_tiene_ramos` (`Codigo_Carrera`, `Codigo_Ramo`, `Semestre`) 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clase`
+-- Estructura de tabla para la tabla `clase`
 --
 
 CREATE TABLE IF NOT EXISTS `clase` (
@@ -753,7 +753,7 @@ CREATE TABLE IF NOT EXISTS `clase` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27 ;
 
 --
--- Dumping data for table `clase`
+-- Volcado de datos para la tabla `clase`
 --
 
 INSERT INTO `clase` (`Id`, `Clase_Tipo`, `Seccion_Id`, `RUT_Profesor`, `Modulo_Inicio`, `Modulo_Termino`, `Dia`, `Codigo_Semestre`) VALUES
@@ -787,7 +787,7 @@ INSERT INTO `clase` (`Id`, `Clase_Tipo`, `Seccion_Id`, `RUT_Profesor`, `Modulo_I
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clase_tipo`
+-- Estructura de tabla para la tabla `clase_tipo`
 --
 
 CREATE TABLE IF NOT EXISTS `clase_tipo` (
@@ -799,7 +799,7 @@ CREATE TABLE IF NOT EXISTS `clase_tipo` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clase_usa_lab`
+-- Estructura de tabla para la tabla `clase_usa_lab`
 --
 
 CREATE TABLE IF NOT EXISTS `clase_usa_lab` (
@@ -810,7 +810,7 @@ CREATE TABLE IF NOT EXISTS `clase_usa_lab` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `disponibilidad`
+-- Estructura de tabla para la tabla `disponibilidad`
 --
 
 CREATE TABLE IF NOT EXISTS `disponibilidad` (
@@ -823,23 +823,23 @@ CREATE TABLE IF NOT EXISTS `disponibilidad` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `imparte`
+-- Estructura de tabla para la tabla `imparte`
 --
 
 CREATE TABLE IF NOT EXISTS `imparte` (
   `id_lab_imp` int(11) NOT NULL,
   `id_mod_imp` int(11) NOT NULL,
-  `id_asig_imp` int(11) NOT NULL,
+  `id_clase_imp` int(11) NOT NULL,
   `periodo` int(11) NOT NULL,
-  PRIMARY KEY (`id_lab_imp`,`id_mod_imp`,`id_asig_imp`,`periodo`),
+  PRIMARY KEY (`id_lab_imp`,`id_mod_imp`,`id_clase_imp`,`periodo`),
   KEY `id_mod_imp` (`id_mod_imp`),
-  KEY `id_asig_imp` (`id_asig_imp`)
+  KEY `id_asig_imp` (`id_clase_imp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `laboratorio`
+-- Estructura de tabla para la tabla `laboratorio`
 --
 
 CREATE TABLE IF NOT EXISTS `laboratorio` (
@@ -850,7 +850,7 @@ CREATE TABLE IF NOT EXISTS `laboratorio` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
 
 --
--- Dumping data for table `laboratorio`
+-- Volcado de datos para la tabla `laboratorio`
 --
 
 INSERT INTO `laboratorio` (`id_lab`, `edificio`, `sala`) VALUES
@@ -860,7 +860,7 @@ INSERT INTO `laboratorio` (`id_lab`, `edificio`, `sala`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `modulo`
+-- Estructura de tabla para la tabla `modulo`
 --
 
 CREATE TABLE IF NOT EXISTS `modulo` (
@@ -871,7 +871,7 @@ CREATE TABLE IF NOT EXISTS `modulo` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `modulo`
+-- Volcado de datos para la tabla `modulo`
 --
 
 INSERT INTO `modulo` (`Modulo`, `Regimen`, `Inicio`, `Termino`) VALUES
@@ -905,7 +905,7 @@ INSERT INTO `modulo` (`Modulo`, `Regimen`, `Inicio`, `Termino`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `presupuesto`
+-- Estructura de tabla para la tabla `presupuesto`
 --
 
 CREATE TABLE IF NOT EXISTS `presupuesto` (
@@ -918,7 +918,7 @@ CREATE TABLE IF NOT EXISTS `presupuesto` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `profesor`
+-- Estructura de tabla para la tabla `profesor`
 --
 
 CREATE TABLE IF NOT EXISTS `profesor` (
@@ -929,7 +929,7 @@ CREATE TABLE IF NOT EXISTS `profesor` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `profesor`
+-- Volcado de datos para la tabla `profesor`
 --
 
 INSERT INTO `profesor` (`RUT_Profesor`, `Nombre`, `Profesor_Grado`) VALUES
@@ -1086,7 +1086,7 @@ INSERT INTO `profesor` (`RUT_Profesor`, `Nombre`, `Profesor_Grado`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `profesor_grado`
+-- Estructura de tabla para la tabla `profesor_grado`
 --
 
 CREATE TABLE IF NOT EXISTS `profesor_grado` (
@@ -1096,7 +1096,7 @@ CREATE TABLE IF NOT EXISTS `profesor_grado` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
--- Dumping data for table `profesor_grado`
+-- Volcado de datos para la tabla `profesor_grado`
 --
 
 INSERT INTO `profesor_grado` (`Id`, `Grado`) VALUES
@@ -1108,7 +1108,7 @@ INSERT INTO `profesor_grado` (`Id`, `Grado`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `profesor_tiene_ramos`
+-- Estructura de tabla para la tabla `profesor_tiene_ramos`
 --
 
 CREATE TABLE IF NOT EXISTS `profesor_tiene_ramos` (
@@ -1121,7 +1121,7 @@ CREATE TABLE IF NOT EXISTS `profesor_tiene_ramos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ramo`
+-- Estructura de tabla para la tabla `ramo`
 --
 
 CREATE TABLE IF NOT EXISTS `ramo` (
@@ -1141,7 +1141,7 @@ CREATE TABLE IF NOT EXISTS `ramo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `ramo`
+-- Volcado de datos para la tabla `ramo`
 --
 
 INSERT INTO `ramo` (`Codigo`, `Nombre`, `Teoria`, `Tipo`, `Periodo`, `Ayudantia`, `Laboratorio`, `Taller`, `Creditos`, `SepAyu`, `SepLab`, `SepTal`) VALUES
@@ -1303,7 +1303,7 @@ INSERT INTO `ramo` (`Codigo`, `Nombre`, `Teoria`, `Tipo`, `Periodo`, `Ayudantia`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ramos_impartidos`
+-- Estructura de tabla para la tabla `ramos_impartidos`
 --
 
 CREATE TABLE IF NOT EXISTS `ramos_impartidos` (
@@ -1317,7 +1317,7 @@ CREATE TABLE IF NOT EXISTS `ramos_impartidos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `ramos_impartidos`
+-- Volcado de datos para la tabla `ramos_impartidos`
 --
 
 INSERT INTO `ramos_impartidos` (`Codigo_Carrera`, `Codigo_Ramo`, `Codigo_Semestre`, `Impartido`) VALUES
@@ -1328,7 +1328,7 @@ INSERT INTO `ramos_impartidos` (`Codigo_Carrera`, `Codigo_Ramo`, `Codigo_Semestr
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ramo_tipo`
+-- Estructura de tabla para la tabla `ramo_tipo`
 --
 
 CREATE TABLE IF NOT EXISTS `ramo_tipo` (
@@ -1340,7 +1340,7 @@ CREATE TABLE IF NOT EXISTS `ramo_tipo` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 --
--- Dumping data for table `ramo_tipo`
+-- Volcado de datos para la tabla `ramo_tipo`
 --
 
 INSERT INTO `ramo_tipo` (`Id`, `Tipo`, `Abreviacion`, `soloDepto`) VALUES
@@ -1355,7 +1355,7 @@ INSERT INTO `ramo_tipo` (`Id`, `Tipo`, `Abreviacion`, `soloDepto`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ramo_usa_lab`
+-- Estructura de tabla para la tabla `ramo_usa_lab`
 --
 
 CREATE TABLE IF NOT EXISTS `ramo_usa_lab` (
@@ -1368,7 +1368,7 @@ CREATE TABLE IF NOT EXISTS `ramo_usa_lab` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `ramo_usa_lab`
+-- Volcado de datos para la tabla `ramo_usa_lab`
 --
 
 INSERT INTO `ramo_usa_lab` (`codigo`, `teoria`, `ayudantia`, `laboratorio`, `taller`) VALUES
@@ -1379,7 +1379,7 @@ INSERT INTO `ramo_usa_lab` (`codigo`, `teoria`, `ayudantia`, `laboratorio`, `tal
 -- --------------------------------------------------------
 
 --
--- Table structure for table `seccion`
+-- Estructura de tabla para la tabla `seccion`
 --
 
 CREATE TABLE IF NOT EXISTS `seccion` (
@@ -1398,7 +1398,7 @@ CREATE TABLE IF NOT EXISTS `seccion` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 --
--- Dumping data for table `seccion`
+-- Volcado de datos para la tabla `seccion`
 --
 
 INSERT INTO `seccion` (`Id`, `Numero_Seccion`, `NRC`, `Codigo_Ramo`, `Codigo_Carrera`, `Codigo_Semestre`, `Regimen`, `Vacantes`, `Vacantes_utilizadas`) VALUES
@@ -1413,7 +1413,7 @@ INSERT INTO `seccion` (`Id`, `Numero_Seccion`, `NRC`, `Codigo_Ramo`, `Codigo_Car
 -- --------------------------------------------------------
 
 --
--- Table structure for table `semestre`
+-- Estructura de tabla para la tabla `semestre`
 --
 
 CREATE TABLE IF NOT EXISTS `semestre` (
@@ -1426,7 +1426,7 @@ CREATE TABLE IF NOT EXISTS `semestre` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `semestre`
+-- Volcado de datos para la tabla `semestre`
 --
 
 INSERT INTO `semestre` (`Codigo_Semestre`, `Numero`, `Anho`, `Fecha_Inicio`, `Fecha_Termino`) VALUES
@@ -1435,7 +1435,7 @@ INSERT INTO `semestre` (`Codigo_Semestre`, `Numero`, `Anho`, `Fecha_Inicio`, `Fe
 -- --------------------------------------------------------
 
 --
--- Table structure for table `software`
+-- Estructura de tabla para la tabla `software`
 --
 
 CREATE TABLE IF NOT EXISTS `software` (
@@ -1446,16 +1446,16 @@ CREATE TABLE IF NOT EXISTS `software` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 --
--- Dumping data for table `software`
+-- Volcado de datos para la tabla `software`
 --
 
 INSERT INTO `software` (`id_sw`, `nom_sw`, `version`) VALUES
-(1, 'Java', '6.2');
+(1, 'Java', '7');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `software_asignado`
+-- Estructura de tabla para la tabla `software_asignado`
 --
 
 CREATE TABLE IF NOT EXISTS `software_asignado` (
@@ -1468,7 +1468,7 @@ CREATE TABLE IF NOT EXISTS `software_asignado` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `solicitud`
+-- Estructura de tabla para la tabla `solicitud`
 --
 
 CREATE TABLE IF NOT EXISTS `solicitud` (
@@ -1489,7 +1489,7 @@ CREATE TABLE IF NOT EXISTS `solicitud` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tipo_usuario`
+-- Estructura de tabla para la tabla `tipo_usuario`
 --
 
 CREATE TABLE IF NOT EXISTS `tipo_usuario` (
@@ -1499,7 +1499,7 @@ CREATE TABLE IF NOT EXISTS `tipo_usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `tipo_usuario`
+-- Volcado de datos para la tabla `tipo_usuario`
 --
 
 INSERT INTO `tipo_usuario` (`Id`, `Tipo`) VALUES
@@ -1512,7 +1512,7 @@ INSERT INTO `tipo_usuario` (`Id`, `Tipo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `trimestre`
+-- Estructura de tabla para la tabla `trimestre`
 --
 
 CREATE TABLE IF NOT EXISTS `trimestre` (
@@ -1525,7 +1525,7 @@ CREATE TABLE IF NOT EXISTS `trimestre` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `trimestre`
+-- Volcado de datos para la tabla `trimestre`
 --
 
 INSERT INTO `trimestre` (`Codigo_Trimestre`, `Numero`, `Anho`, `Fecha_Inicio`, `Fecha_Termino`) VALUES
@@ -1534,7 +1534,7 @@ INSERT INTO `trimestre` (`Codigo_Trimestre`, `Numero`, `Anho`, `Fecha_Inicio`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuario`
+-- Estructura de tabla para la tabla `usuario`
 --
 
 CREATE TABLE IF NOT EXISTS `usuario` (
@@ -1548,7 +1548,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `usuario`
+-- Volcado de datos para la tabla `usuario`
 --
 
 INSERT INTO `usuario` (`Nombre_Usuario`, `RUT`, `Nombre`, `Password`, `Id_Tipo`) VALUES

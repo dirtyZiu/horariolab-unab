@@ -10,13 +10,19 @@ if(isset($_SESSION['usuario']))
     $usuario = new JefeDeLaboratorio($usuario->getNombre(),$usuario->getNombreUsuario(),$usuario->getRut());
     $_SESSION['usuario'] = serialize($usuario);
   }
+  
+  //obtener semestre actual si no se tiene definido
+  if(!isset($_SESSION['codigoSemestre'])){
+    $_SESSION['codigoSemestre'] = obtenerSemestre(1);
+  }
 
-  if(isset($_POST['cambiarCarrera']) && $_POST['cambiarCarrera'] == 'CAMBIAR CARRERA') {
-    $_SESSION['carrera'] = null;
-    $_SESSION['codigoSemestre'] = null;
-    header("Location: ../home.php");
-    exit();
-  }  
+  //cambiar semestre manualmente
+  if(isset($_POST['cambiar']) && $_POST['cambiar'] == 'Cambiar Semestre')
+  {
+	$_SESSION['codigoSemestre'] = $_POST['semestre'];
+  }
+  
+
   ?>
 <html>
 
@@ -135,35 +141,62 @@ if(isset($_SESSION['usuario']))
         </ul>
       </div>
     </div>
-    <div id="content">
+	<div id="site_content"><div id="content">
+	<!-- Formulario codigo semestre -->
+		<h1>Semestre "<?php echo $_SESSION['codigoSemestre']; ?>" actualmente seleccionado.</h1>
+		<h2>Cambiar Semestre</h2>
+		<table>
+        <form method="post" name="cambiarSemestre" target="_self">
+          <tr><td>C&oacutedigo semestre</td><td></td></tr>
+          <tr><td>
+		  <select name="semestre">
+		  <?php seleccionarSemestres(); ?>
+		  </select>
+		  </td>
+          <td><input id="btt" type="submit" name="cambiar" value="Cambiar Semestre"></input></td></tr>
+        </form>
+        </table>
+	
+
         <!-- insert the page content here -->
+		
+		<!-- Horario -->
         <h2>Horario</h2>
         <div>
+		
         <?php
-          $numeroSemestres = numeroSemestres($_SESSION['carrera']);
-          echo '<table class="centerTable"><tr>';
-          for($i = 0;$i<$numeroSemestres;$i++)
+				
+		// Cantidad de laboratorios existentes		
+          $arrLaboratorios = arrLaboratorios();
+          echo '<table class="centerTable"><tr>';	
+		  $sizeof_arr = sizeof($arrLaboratorios);
+          for($i = 0;$i<$sizeof_arr;$i++)
           {
-            if(isset($_GET['numeroSemestre']) && $_GET['numeroSemestre'] == ($i+1))
-              echo '<td class="dc"><a href="horario.php?numeroSemestre='.($i+1).'">'.($i+1).'</a></td>';
+            if(isset($_GET['lab']) && $_GET['lab'] == ($arrLaboratorios[$i][0]))
+              echo '<td class="dc"><a href="horariolab.php?lab='.($arrLaboratorios[$i][0]).'">'.($arrLaboratorios[$i][1]).'-'.($arrLaboratorios[$i][2]).'</a></td>';
             else
-              echo '<td><a href="horario.php?numeroSemestre='.($i+1).'">'.($i+1).'</a></td>';
+              echo '<td><a href="horariolab.php?lab='.($arrLaboratorios[$i][0]).'">'.($arrLaboratorios[$i][1]).'-'.($arrLaboratorios[$i][2]).'</a></td>';
           }
           echo '</tr></table>';
-
+		
+		
+		//clases sin asignacion de horario en semestre >> cambiar a laboratorio
+		/* 
           echo '<div class="up">';
-          if(isset($_GET['numeroSemestre']))
-            verClasesSinHorarioSemestre($_SESSION['carrera'],$_SESSION['codigoSemestre'],$_GET['numeroSemestre']);
-          elseif(isset($_POST['numeroSemestre']))
-            verClasesSinHorarioSemestre($_SESSION['carrera'],$_SESSION['codigoSemestre'],$_POST['numeroSemestre']);
-          else
-            verClasesSinHorarioSemestre($_SESSION['carrera'],$_SESSION['codigoSemestre'],1);
+          if(isset($_GET['lab']))
+            verClasesSinHorarioLab($_SESSION['codigoSemestre'],$_GET['lab']);
+          elseif(isset($_POST['lab']))
+            verClasesSinHorarioLab($_SESSION['codigoSemestre'],$_POST['lab']);
           echo '</div>';
-
+		*/
+		
+		// abajo: boton borrar asignatura del horario
           echo '<div class="bin"><table><tr><td class="drop" style="border: 1px black solid;">Borrar el horario<br>de una clase</td></tr></table></div>';
 
           echo '<div id="resp"></div>';
  
+		// abajo: ver horario deacuerdo a semestre seleccionado >> cambiar a laboratorio >> agregar en else opcion de ver campos vacios si no selecciona ninguno
+		/*
           if(isset($_GET['numeroSemestre']) || (isset($_POST['submit']) && $_POST['submit'] == 'Cambiar' && isset($_POST['numeroSemestre'])))
           {
             if(isset($_GET['numeroSemestre'])) 
@@ -182,20 +215,23 @@ if(isset($_SESSION['usuario']))
             verHorario($_SESSION['carrera'],$_SESSION['codigoSemestre'],1);
             echo '</div>';
           }   
-
+		*/
+		  
+		// Cantidad de laboratorios existentes
           echo '<table class="centerTable"><tr>';
-          for($i = 0;$i<$numeroSemestres;$i++)
+          for($i = 0;$i<$sizeof_arr;$i++)
           {
-            if(isset($_GET['numeroSemestre']) && $_GET['numeroSemestre'] == ($i+1))
-              echo '<td class="dc"><a href="horario.php?numeroSemestre='.($i+1).'">'.($i+1).'</a></td>';
+            if(isset($_GET['lab']) && $_GET['lab'] == ($arrLaboratorios[$i][0]))
+              echo '<td class="dc"><a href="horariolab.php?lab='.($arrLaboratorios[$i][0]).'">'.($arrLaboratorios[$i][1]).'-'.($arrLaboratorios[$i][2]).'</a></td>';
             else
-              echo '<td><a href="horario.php?numeroSemestre='.($i+1).'">'.($i+1).'</a></td>';
+              echo '<td><a href="horariolab.php?lab='.($arrLaboratorios[$i][0]).'">'.($arrLaboratorios[$i][1]).'-'.($arrLaboratorios[$i][2]).'</a></td>';
           }
           echo '</tr></table>';
         ?>
         <br><br>
       </div>
     </div>
+	</div>
     <div id="content_footer"></div>
     <div id="footer">
     </div>

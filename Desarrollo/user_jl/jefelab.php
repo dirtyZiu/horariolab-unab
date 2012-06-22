@@ -1,4 +1,30 @@
-<!DOCTYPE HTML>
+<?php
+foreach (glob("../class/*.php") as $filename) {
+   include_once($filename);
+}
+session_start();
+if(isset($_SESSION['usuario']))
+{
+  $usuario = unserialize($_SESSION['usuario']);
+  if(get_class($usuario) == 'jefeDeCarrera') {
+    $usuario = new JefeDeLaboratorio($usuario->getNombre(),$usuario->getNombreUsuario(),$usuario->getRut());
+    $_SESSION['usuario'] = serialize($usuario);
+  }
+  
+  //obtener semestre actual si no se tiene definido
+  if(!isset($_SESSION['codigoSemestre'])){
+    $_SESSION['codigoSemestre'] = obtenerSemestre(1);
+  }
+
+  //cambiar semestre manualmente
+  if(isset($_POST['cambiar']) && $_POST['cambiar'] == 'Cambiar Semestre')
+  {
+	$_SESSION['codigoSemestre'] = $_POST['semestre'];
+  }
+  
+
+  ?>
+  
 <html>
 
 <head>
@@ -41,6 +67,22 @@
         <!-- insert the page content here -->
         <h1>Bienvenido Jefe de Laboratorio</h1>
 		En Construcci&oacuten (M&oacutedulo de Monitoreo)
+		
+		<!-- formulario cambio de Semestre -->
+		<h1>Semestre "<?php echo $_SESSION['codigoSemestre']; ?>" actualmente seleccionado.</h1>
+		<h2>Cambiar Semestre</h2>
+		<table>
+        <form method="post" name="cambiarSemestre" target="_self">
+          <tr><td>C&oacutedigo semestre</td><td></td></tr>
+          <tr><td>
+		  <select name="semestre">
+		  <?php seleccionarSemestres(); ?>
+		  </select>
+		  </td>
+          <td><input id="btt" type="submit" name="cambiar" value="Cambiar Semestre"></input></td></tr>
+        </form>
+        </table>
+		
       </div>
     </div>
     <div id="content_footer"></div>
@@ -49,3 +91,12 @@
   </div>
 </body>
 </html>
+
+<?php
+}
+else
+{
+  header("Location: ../index.php");
+  exit();
+}
+?>

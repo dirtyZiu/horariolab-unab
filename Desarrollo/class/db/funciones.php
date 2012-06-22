@@ -1418,5 +1418,104 @@ function verHorarioDepto($regimen)
   }
   $res2->free_result();  
   echo '</table></div>';
+  
 }
+
+  //funciones para Jefe de laboratorios
+  function seleccionarSemestres() {
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "SELECT Codigo_Semestre
+               FROM Semestre;";
+    $res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($vSemestre);
+    $flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+      {
+        $flag = 1;
+      }
+      echo '<option value="'.$vSemestre.'">'.$vSemestre.'</option>';
+    }
+    if(!isset($rutJC))
+      echo '';
+    $res->free_result();
+  }
+      
+  	function arrLaboratorios() {
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "SELECT id_lab, edificio, sala FROM laboratorio";
+    $res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($id,$edificio,$sala);
+    $flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      $arr[] = array($id,$edificio,$sala);
+    }
+    if($flag == 0)
+      echo '';
+    else
+      return $arr;
+    $res->free_result();
+  }
+  
+  function verClasesSinHorarioLab($codigoSemestre,$lab)
+{
+//cambiar TODO
+/*
+  global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+  $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+  $sql = "SELECT c.id,s.Codigo_Ramo,s.Numero_Seccion,c.Clase_Tipo,c.RUT_Profesor
+           FROM Clase AS c
+           INNER JOIN Carrera_Tiene_Ramos AS ctr ON ctr.Codigo_Carrera = '{$codigoCarrera}' AND ctr.Semestre = '{$numeroSemestre}'
+           INNER JOIN Seccion AS s ON s.Codigo_Ramo = ctr.Codigo_Ramo AND s.Codigo_Carrera = '{$codigoCarrera}' AND s.Codigo_Semestre = '{$codigoSemestre}'
+          WHERE c.Seccion_Id = s.Id AND c.Codigo_Semestre = '{$codigoSemestre}' AND c.Dia IS NULL AND c.Modulo_Inicio IS NULL AND c.Modulo_Termino IS NULL ORDER BY s.Codigo_Ramo,s.Numero_Seccion;"; 
+  $res = $mysqli->prepare($sql);
+  $res->execute();
+  $res->bind_result($idClase,$codigoRamo,$numeroSeccion,$tipoClase,$profesor);
+  $lastSeccion = 0;
+  $lastCodigoRamo = 0;
+  $flag = 0;
+  $new = 0;
+  while($res->fetch())
+  {
+    if($flag == 0) {
+      $lastSeccion = $numeroSeccion;
+      $lastCodigoRamo = $codigoRamo;
+      $flag = 1;
+      echo '<table><tr>'; }
+    if($lastCodigoRamo != $codigoRamo) {
+      echo '</tr>';
+      $lastCodigoRamo = $codigoRamo; 
+      $new = 1;}
+    else {
+      if($lastSeccion != $numeroSeccion) {
+        echo '</tr>';
+        $lastSeccion = $numeroSeccion;
+        $new = 1; }
+    }
+    if($new == 1) {
+      echo '<tr>';
+      $new = 0; }
+    if($profesor == NULL)
+      $profesor = '<a id="'.$idClase.'.'.$numeroSemestre.'" class="cambiarProfesor" href="">S/Profesor</a>';
+    else {
+      $profesor = verProfesor($profesor);
+      $profesor = '<a id="'.$idClase.'.'.$numeroSemestre.'" class="cambiarProfesor" href="">'.$profesor.'</a>';}
+    echo '<td><div class="item" id="'.$idClase.'">'.$codigoRamo.'<br>'.$numeroSeccion.'. '.$tipoClase.'<div class="prof">'.$profesor.'</div></div></td>';
+  }
+  if($flag == 1)
+    echo '</table>';
+  $res->free_result();
+  */
+  
+  //pequeña prueba
+}
+
 ?>
