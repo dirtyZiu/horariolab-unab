@@ -29,7 +29,8 @@ if(isset($_SESSION['usuario']))
   }
   
   if($_SESSION['tipoUsuario'] == 5){
-  echo 'Hola Mundo.';
+	$_SESSION['codigoSemestre'] = null;
+	$_SESSION['regimen'] = null;
   }
   
   if($_SESSION['tipoUsuario'] == 1 || $_SESSION['tipoUsuario'] == 3)

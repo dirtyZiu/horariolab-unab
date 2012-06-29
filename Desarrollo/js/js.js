@@ -176,6 +176,39 @@ function asignarHorario(idClase,horario)
   }*/
 }
 
+function asignarHorarioLab(idClase,horario)
+{
+  var xmlhttp;
+  var ans;
+  xmlhttp=new XMLHttpRequest();
+  xmlhttp.open("GET","../user_admin/secundario/ajax.php?idClaseLab="+idClase+"&horarioLab="+horario,false);
+  xmlhttp.send();
+  return xmlhttp.responseText;
+  /*xmlhttp.onreadystatechange=function()
+  {
+    if(xmlhttp.status==200 && xmlhttp.readyState==4)
+    {
+      if(xmlhttp.responseText)
+      {
+        alert("ajax: "+xmlhttp.responseText);
+        ans = xmlhttp.responseText;
+        alert("answer: "+ans);
+        if(xmlhttp.responseText == '-2'){
+          alert("devolvemos menos dos.");
+          return xmlhttp.responseText;}
+        else if(xmlhttp.responseText == '-1')
+          return '-1';
+        else if(xmlhttp.responseText == '0')
+          return '0';
+        else if(xmlhttp.responseText == '1')
+          return '1';
+        else if(xmlhttp.responseText == '2')
+          return '2';
+      }
+    }
+  }*/
+}
+
 function asignarHorarioDepto(idClase,horario)
 {
   var xmlhttp;
@@ -215,6 +248,16 @@ function noAsignarHorario(idClase)
   var ans;
   xmlhttp=new XMLHttpRequest();
   xmlhttp.open("GET","../user_admin/secundario/ajax.php?idClase2="+idClase,false);
+  xmlhttp.send();
+  return xmlhttp.responseText;
+}
+
+function noAsignarHorarioLab(idClase)
+{
+  var xmlhttp;
+  var ans;
+  xmlhttp=new XMLHttpRequest();
+  xmlhttp.open("GET","../user_admin/secundario/ajax.php?idClaseLab2="+idClase,false);
   xmlhttp.send();
   return xmlhttp.responseText;
 }

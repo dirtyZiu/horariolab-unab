@@ -278,6 +278,71 @@ if(isset($_SESSION['usuario']))
       echo '2';
     }  
   }
+  elseif(isset($_GET['idClaseLab']) && isset($_GET['horarioLab']))
+  {
+    $inicio = 0;
+    $fin = 0;
+    $largo = strlen($_GET['horarioLab']); 
+    $flag = 0;
+    $i = 0;
+    for($i = 0;$i<2;$i++)
+    {
+      $flag = 0;
+      while($flag == 0)
+      {
+        if(substr($_GET['horarioLab'],$fin,1) == '.')
+        {
+          if($i == 0) {
+            $dia = substr($_GET['horarioLab'],0,$fin);
+            $inicio = $fin+1;
+            $flag = 1;
+          }
+          elseif($i == 1) {
+            $moduloInicioF = substr($_GET['horarioLab'],$inicio,$fin-$inicio);
+            $moduloTerminoF = substr($_GET['horarioLab'],$fin+1,$largo-$fin);
+            $flag = 1;    
+          }
+        } 
+        $fin++;
+      }
+    }
+
+    if($moduloInicioF == 0 || $moduloTerminoF == 0)
+      echo 'false inicio: '.$moduloInicioF.' termino: '.$moduloTerminoF;
+    else{
+	//update
+			$idClase = $_GET['idClaseLab'];
+			$lab = $_SESSION['lab'];
+			$codigoSemestre = $_SESSION['codigoSemestre'];
+	
+	        $mysqli8 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+            $sql8 = "REPLACE imparte SET id_clase_imp = '{$idClase}',id_lab_imp = '{$lab}',semestre = '{$codigoSemestre}', Dia = '{$dia}',Modulo_Inicio = '{$moduloInicioF}',Modulo_Termino = '{$moduloTerminoF}';";
+            if(($mysqli8->query($sql8)) == true)
+            {
+              echo '1';
+            }
+            else
+            {
+              echo '2';
+            }
+  }//else  
+  }
+    elseif(isset($_GET['idClaseLab2']))
+  {
+    $idClase = $_GET['idClaseLab2'];
+	$codigoSemestre = $_SESSION['codigoSemestre'];
+  
+    $mysqli9 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql9 = "DELETE FROM imparte WHERE id_clase_imp = '{$idClase}' AND semestre = '{$codigoSemestre}';";
+    if(($mysqli9->query($sql9)) == true)
+    {
+      echo '1';
+    }
+    else
+    {
+      echo '2';
+    }  
+  }
 }
 else
 {

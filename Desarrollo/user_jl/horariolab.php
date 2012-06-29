@@ -11,23 +11,34 @@ if(isset($_SESSION['usuario']))
     $_SESSION['usuario'] = serialize($usuario);
   }
   
-  //obtener semestre actual si no se tiene definido
+  //obtener regimen y semestre actual si no se tiene definido
   if(!isset($_SESSION['codigoSemestre'])){
     $_SESSION['codigoSemestre'] = obtenerSemestre(1);
   }
+  if(!isset($_SESSION['regimen'])){
+    $_SESSION['regimen'] = 'D';
+  }
 
-  //cambiar semestre manualmente
+  //cambiar regimen y semestre manualmente
   if(isset($_POST['cambiar']) && $_POST['cambiar'] == 'Cambiar Semestre')
   {
 	$_SESSION['codigoSemestre'] = $_POST['semestre'];
   }
+  if(isset($_POST['cambiar']) && $_POST['cambiar'] == 'Cambiar Regimen')
+  {
+	$_SESSION['regimen'] = $_POST['regimen'];
+  }
   
+  if(isset($_GET['lab']) && isset($_GET['lab'])!=NULL){
+	$_SESSION['lab'] = $_GET['lab'];
+  }
+    
 
   ?>
 <html>
 
 <head>
-  <title>colour_blue</title>
+  <title>JL Horario</title>
   <meta charset="utf-8" />
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
@@ -49,7 +60,7 @@ if(isset($_SESSION['usuario']))
                                 },
                                 onDrop:function(e,source){
                                         $(this).removeClass('over');
-                                        ans = noAsignarHorario($(source).attr('id'));
+                                        ans = noAsignarHorarioLab($(source).attr('id'));
                                         if(ans == 1)
                                         {
                                           var b = $(source).addClass('assigned');
@@ -86,7 +97,7 @@ if(isset($_SESSION['usuario']))
                                                 var scc = '<span class="error">*Horario asignado.</span>';
                                                 var err4 = '<span class="error">*Horario no asignado, intentelo más tarde.</span>';
                                                 var resp;
-                                                resp = asignarHorario($(source).attr('id'),$(this).attr('id'));
+                                                resp = asignarHorarioLab($(source).attr('id'),$(this).attr('id'));
                                                 if(resp == '-2')
                                                 {
                                                   document.getElementById("resp").innerHTML=err1;
@@ -143,17 +154,20 @@ if(isset($_SESSION['usuario']))
     </div>
 	<div id="site_content"><div id="content">
 	<!-- Formulario codigo semestre -->
-		<h1>Semestre "<?php echo $_SESSION['codigoSemestre']; ?>" actualmente seleccionado.</h1>
-		<h2>Cambiar Semestre</h2>
+		<h1>Semestre "<?php echo $_SESSION['codigoSemestre']; ?>" y R&eacutegimen "<?php echo $_SESSION['regimen']; ?>" actualmente seleccionados.</h1>
+		<h2>Cambiar Valores</h2>
 		<table>
         <form method="post" name="cambiarSemestre" target="_self">
-          <tr><td>C&oacutedigo semestre</td><td></td></tr>
-          <tr><td>
-		  <select name="semestre">
+          <tr><td>C&oacutedigo semestre</td>
+          <td><select name="semestre">
 		  <?php seleccionarSemestres(); ?>
-		  </select>
-		  </td>
+		  </select></td>
           <td><input id="btt" type="submit" name="cambiar" value="Cambiar Semestre"></input></td></tr>
+		  <tr><td>R&eacutegimen</td>
+		  <td><select name="regimen">
+		  <option value="D">D</option><option value="V">V</option>
+		  </select></td>
+		  <td><input id="btt" type="submit" name="cambiar" value="Cambiar Regimen"></input></td></tr>
         </form>
         </table>
 	
@@ -180,39 +194,40 @@ if(isset($_SESSION['usuario']))
           echo '</tr></table>';
 		
 		
-		//clases sin asignacion de horario en semestre >> cambiar a laboratorio
-		/* 
+		//clases sin asignacion de horario en laboratorio
+		
           echo '<div class="up">';
           if(isset($_GET['lab']))
-            verClasesSinHorarioLab($_SESSION['codigoSemestre'],$_GET['lab']);
+            verClasesSinHorarioLab($_SESSION['codigoSemestre'],$_SESSION['regimen']);
           elseif(isset($_POST['lab']))
-            verClasesSinHorarioLab($_SESSION['codigoSemestre'],$_POST['lab']);
+            verClasesSinHorarioLab($_SESSION['codigoSemestre'],$_SESSION['regimen']);
           echo '</div>';
-		*/
+		
 		
 		// abajo: boton borrar asignatura del horario
           echo '<div class="bin"><table><tr><td class="drop" style="border: 1px black solid;">Borrar el horario<br>de una clase</td></tr></table></div>';
 
           echo '<div id="resp"></div>';
  
-		// abajo: ver horario deacuerdo a semestre seleccionado >> cambiar a laboratorio >> agregar en else opcion de ver campos vacios si no selecciona ninguno
-		/*
-          if(isset($_GET['numeroSemestre']) || (isset($_POST['submit']) && $_POST['submit'] == 'Cambiar' && isset($_POST['numeroSemestre'])))
+		// abajo: ver horario deacuerdo a laboratorio
+		
+          if(isset($_GET['lab']) || (isset($_POST['submit']) && $_POST['submit'] == 'Cambiar' && isset($_POST['lab'])))
           {
-            if(isset($_GET['numeroSemestre'])) 
+            if(isset($_GET['lab'])) 
             {
-              verHorario($_SESSION['carrera'],$_SESSION['codigoSemestre'],$_GET['numeroSemestre']);
+              verHorarioLab($_SESSION['codigoSemestre'],$_GET['lab'],$_SESSION['regimen']);
               echo '</div>';
             }
-            elseif(isset($_POST['submit']) && $_POST['submit'] == 'Cambiar' && isset($_POST['numeroSemestre']))
+            elseif(isset($_POST['submit']) && $_POST['submit'] == 'Cambiar' && isset($_POST['lab']))
             {
-              verHorario($_SESSION['carrera'],$_SESSION['codigoSemestre'],$_POST['numeroSemestre']);
+              verHorarioLab($_SESSION['codigoSemestre'],$_POST['lab'],$_SESSION['regimen']);
               echo '</div>';
             }
           }
+		  /*
           else
           {
-            verHorario($_SESSION['carrera'],$_SESSION['codigoSemestre'],1);
+            verHorarioLab($_SESSION['codigoSemestre'],$_SESSION['regimen']);
             echo '</div>';
           }   
 		*/

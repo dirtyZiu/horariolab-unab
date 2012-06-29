@@ -1465,17 +1465,11 @@ function verHorarioDepto($regimen)
     $res->free_result();
   }
   
-  function verClasesSinHorarioLab($codigoSemestre,$lab)
+  function verClasesSinHorarioLab($codigoSemestre,$regimen)
 {
-//cambiar TODO
-/*
   global $mysqli,$db_host,$db_user,$db_pass,$db_database;
-  $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-  $sql = "SELECT c.id,s.Codigo_Ramo,s.Numero_Seccion,c.Clase_Tipo,c.RUT_Profesor
-           FROM Clase AS c
-           INNER JOIN Carrera_Tiene_Ramos AS ctr ON ctr.Codigo_Carrera = '{$codigoCarrera}' AND ctr.Semestre = '{$numeroSemestre}'
-           INNER JOIN Seccion AS s ON s.Codigo_Ramo = ctr.Codigo_Ramo AND s.Codigo_Carrera = '{$codigoCarrera}' AND s.Codigo_Semestre = '{$codigoSemestre}'
-          WHERE c.Seccion_Id = s.Id AND c.Codigo_Semestre = '{$codigoSemestre}' AND c.Dia IS NULL AND c.Modulo_Inicio IS NULL AND c.Modulo_Termino IS NULL ORDER BY s.Codigo_Ramo,s.Numero_Seccion;"; 
+  $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);  
+  $sql = "SELECT c.id, rul.codigo, s.numero_seccion, c.clase_tipo, c.rut_profesor FROM clase as c, seccion as s, ramo_usa_lab as rul WHERE s.id = c.seccion_id AND s.codigo_ramo = rul.codigo AND c.codigo_semestre='{$codigoSemestre}' AND ((c.clase_tipo='Teoria' AND rul.teoria='si') OR (c.clase_tipo='Ayudantia' AND rul.ayudantia='si') OR (c.clase_tipo='Laboratorio' AND rul.laboratorio='si') OR (c.clase_tipo='Taller' AND rul.taller='si')) AND s.regimen = '{$regimen}' AND c.id NOT IN (select i.id_clase_imp FROM imparte as i WHERE i.semestre='{$codigoSemestre}')";
   $res = $mysqli->prepare($sql);
   $res->execute();
   $res->bind_result($idClase,$codigoRamo,$numeroSeccion,$tipoClase,$profesor);
@@ -1504,18 +1498,212 @@ function verHorarioDepto($regimen)
       echo '<tr>';
       $new = 0; }
     if($profesor == NULL)
-      $profesor = '<a id="'.$idClase.'.'.$numeroSemestre.'" class="cambiarProfesor" href="">S/Profesor</a>';
-    else {
-      $profesor = verProfesor($profesor);
-      $profesor = '<a id="'.$idClase.'.'.$numeroSemestre.'" class="cambiarProfesor" href="">'.$profesor.'</a>';}
+      $profesor = 'Sin Profesor';
     echo '<td><div class="item" id="'.$idClase.'">'.$codigoRamo.'<br>'.$numeroSeccion.'. '.$tipoClase.'<div class="prof">'.$profesor.'</div></div></td>';
   }
   if($flag == 1)
     echo '</table>';
   $res->free_result();
-  */
-  
-  //pequeña prueba
 }
+
+
+function verHorarioLab($codigoSemestre,$lab,$regimen)
+{
+  global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+  /*
+  $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+  $sql = "SELECT c.Periodo,c.Regimen,c.Numero
+           FROM Carrera AS c 
+          WHERE c.Codigo = '{$codigoCarrera}';"; 
+  $res = $mysqli->prepare($sql);
+  $res->execute();
+  $res->bind_result($periodo,$regimen,$numero);
+  $res->fetch();
+  $res->free_result();  
+ */
+  $mysqli2 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+  if($regimen == 'D')
+    $sql2 = "SELECT m.Modulo,m.Inicio,m.Termino FROM Modulo AS m WHERE m.Regimen = '{$regimen}';"; 
+  else
+    $sql2 = "SELECT m.Modulo,m.Inicio,m.Termino FROM Modulo AS m WHERE m.Regimen = '{$regimen}' ORDER BY m.Modulo ASC;"; 
+  $res2 = $mysqli2->prepare($sql2);
+  $res2->execute();
+  $res2->bind_result($modulo,$inicio,$termino);
+  if($regimen == 'D')
+    echo '<div class="down"><table><tr><td class="dc">Módulo / Días</td><td class="dc" id="Lunes">Lunes</td><td class="dc" id="Martes">Martes</td><td class="dc" id="Miercoles">Miércoles</td><td class="dc" id="Jueves">Jueves</td><td class="dc" id="Viernes">Viernes</td></tr>';
+  else
+    echo '<div class="down"><table><tr><td class="dc">Módulo / Días</td><td class="dc" id="Lunes">Lunes</td><td class="dc" id="Martes">Martes</td><td class="dc" id="Miercoles">Miércoles</td><td class="dc" id="Jueves">Jueves</td><td class="dc" id="Viernes">Viernes</td><td class="dc" id="Sabado">Sábado</td></tr>';
+  $numModulo = 0;
+
+  while($res2->fetch())
+  {
+    $numModulo++;
+    if($modulo % 2 != 0) 
+    {
+	    if($regimen == 'D')
+          echo '<tr><td class="dc">'.$modulo.'. '.substr($inicio,0,5).'-'.substr($termino,0,5).'<br>';
+        else
+		{
+		  if($modulo < 7)
+		    echo '<tr><td class="dc">'.$numModulo.'S. '.substr($inicio,0,5).'-'.substr($termino,0,5).'<br>';
+		  else
+		    echo '<tr><td class="dc">'.($modulo-6).'. '.substr($inicio,0,5).'-'.substr($termino,0,5).'<br>';
+		}
+		$moduloAnterior = $modulo;
+    }
+    else 
+    {
+      if($regimen == 'D') 
+      {
+        echo $modulo.'. '.substr($inicio,0,5).'-'.substr($termino,0,5).'</td>';
+        $dias = array('Lunes','Martes','Miercoles','Jueves','Viernes','Sabado');
+        $i = 0;
+        for($i = 0;$i<5;$i++)
+        {
+          $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+		  /*
+          $sql = "(SELECT c.Id,s.Codigo_Ramo,s.Numero_Seccion,c.Clase_Tipo,c.Dia,c.Modulo_Inicio,'SI',c.RUT_Profesor
+                   FROM Carrera_Tiene_Ramos AS ctr 
+                   INNER JOIN Ramos_Impartidos AS ri ON ri.Codigo_Carrera = ctr.Codigo_Carrera AND ri.Codigo_Ramo = ctr.Codigo_Ramo AND ri.Codigo_Semestre = '{$codigoSemestre}' AND ri.Impartido = 1
+                   INNER JOIN Seccion AS s ON s.Codigo_Ramo = ri.Codigo_Ramo AND s.Codigo_Carrera = ri.Codigo_Carrera AND s.Codigo_Semestre = ri.Codigo_Semestre
+                   INNER JOIN Clase AS c ON c.Seccion_Id = s.Id AND c.Modulo_Inicio = '{$moduloAnterior}' AND c.Modulo_Termino = '{$modulo}' AND c.Dia = '{$dias[$i]}'
+                  WHERE ctr.Codigo_Carrera = '{$codigoCarrera}' AND ctr.Semestre = '{$numeroSemestre}')
+                  UNION
+				  (SELECT c.Id,s.Codigo_Ramo,s.Numero_Seccion,c.Clase_Tipo,c.Dia,c.Modulo_Inicio,'NOO',c.RUT_Profesor
+                   FROM Carrera_Tiene_Ramos AS ctr 
+                   INNER JOIN Ramos_Impartidos AS ri ON ri.Codigo_Carrera = ctr.Codigo_Carrera AND ri.Codigo_Ramo = ctr.Codigo_Ramo AND ri.Codigo_Semestre = '{$codigoSemestre}' AND ri.Impartido = 1
+                   INNER JOIN Seccion AS s ON s.Codigo_Ramo = ri.Codigo_Ramo AND s.Codigo_Carrera = 'DEPTO' AND s.Codigo_Semestre = ri.Codigo_Semestre AND s.Regimen = '{$regimen}'
+                   INNER JOIN Clase AS c ON c.Seccion_Id = s.Id AND c.Modulo_Inicio = '{$moduloAnterior}' AND c.Modulo_Termino = '{$modulo}' AND c.Dia = '{$dias[$i]}'
+                  WHERE ctr.Codigo_Carrera = '{$codigoCarrera}' AND ctr.Semestre = '{$numeroSemestre}')
+				  UNION
+                  (SELECT c.Id,CONCAT(s.Carrera,' ',s.Codigo_Ramo),se.Numero_Seccion,c.Clase_Tipo,c.Dia,c.Modulo_Inicio,'NO',c.RUT_Profesor
+                   FROM Solicitud AS s
+                   INNER JOIN Carrera_Tiene_Ramos AS ctr ON ctr.Codigo_Carrera = '{$codigoCarrera}' AND ctr.Codigo_Ramo = s.Codigo_Ramo AND ctr.Semestre = '{$numeroSemestre}'
+                   INNER JOIN Clase AS c ON c.Seccion_Id = s.Seccion_Asignada AND c.Modulo_Inicio = '{$moduloAnterior}' AND c.Modulo_Termino = '{$modulo}' AND c.Dia = '{$dias[$i]}'
+                   INNER JOIN Seccion AS se ON se.Id = s.Seccion_Asignada
+                  WHERE s.Carrera_Solicitante = '{$codigoCarrera}' AND s.Codigo_Semestre = '{$codigoSemestre}' AND s.Estado = 2);"; 
+			*/
+		  $sql = "SELECT c.id, s.codigo_ramo, s.numero_seccion, c.clase_tipo, i.dia, i.modulo_inicio,'SI',c.rut_profesor FROM clase as c, seccion as s, imparte as i WHERE i.id_clase_imp = c.id AND c.seccion_id = s.id AND i.modulo_inicio = '{$moduloAnterior}' AND i.modulo_termino = '{$modulo}' AND i.dia = '{$dias[$i]}' AND i.id_lab_imp = '{$lab}' AND c.codigo_semestre = '{$codigoSemestre}';"; 
+          $res = $mysqli->prepare($sql);
+          $res->execute();
+          $res->bind_result($claseId,$codigoRamo,$numeroSeccion,$claseTipo,$dia,$moduloInicio,$moduloTermino,$profesor);
+          $flag = 0;
+          while($res->fetch())
+          {
+            if($flag == 0) 
+			{
+              $flag = 1;
+              echo '<td class="drop" id="'.$dias[$i].'.'.$moduloInicio.'.'.$modulo.'">';
+            }
+            if($moduloTermino == 'SI')
+			{
+              if($profesor == NULL)
+                $profesor = 'Sin Profesor';
+              echo '<div class="item" id="'.$claseId.'">'.$codigoRamo.'<br>'.$numeroSeccion.'.'.$claseTipo.'<div class="prof">'.$profesor.'</div></div>';
+            }
+			
+			elseif($moduloTermino == 'NOO')
+			{
+			  echo '<div class="" id="'.$claseId.'" style="background-color: #c7c7c7;">'.$codigoRamo.'<br>'.$numeroSeccion.'.'.$claseTipo.'</div>';
+			}
+            elseif($moduloTermino == 'NO') {
+              if($profesor == NULL)
+                $profesor = 'Sin Profesor';
+              echo '<div class="" id="'.$claseId.'" style="background-color: #c7c7c7;">'.$codigoRamo.'<br>'.$numeroSeccion.'.'.$claseTipo.'<br>'.$profesor.'</div>';
+            }
+			
+          }
+          if($flag == 0)
+            echo '<td class="drop" id="'.$dias[$i].'.'.$moduloAnterior.'.'.$modulo.'"></td>';
+          else
+            echo '</td>';
+          $res->free_result();  
+        }
+        echo '</tr>';
+      }
+      elseif($regimen == 'V') 
+	  {
+	    if($modulo < 7)
+		  echo $numModulo.'S. '.substr($inicio,0,5).'-'.substr($termino,0,5).'</td>';
+		else
+          echo ($modulo-6).'. '.substr($inicio,0,5).'-'.substr($termino,0,5).'</td>';
+        $dias = array('Lunes','Martes','Miercoles','Jueves','Viernes','Sabado');
+        $i = 0;
+        for($i = 0;$i<6;$i++)
+        {
+          $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+		  /*
+          $sql = "(SELECT c.Id,s.Codigo_Ramo,s.Numero_Seccion,c.Clase_Tipo,c.Dia,c.Modulo_Inicio,'SI',c.RUT_Profesor
+                   FROM Carrera_Tiene_Ramos AS ctr 
+                   INNER JOIN Ramos_Impartidos AS ri ON ri.Codigo_Carrera = ctr.Codigo_Carrera AND ri.Codigo_Ramo = ctr.Codigo_Ramo AND ri.Codigo_Semestre = '{$codigoSemestre}' AND ri.Impartido = 1
+                   INNER JOIN Seccion AS s ON s.Codigo_Ramo = ri.Codigo_Ramo AND s.Codigo_Carrera = ri.Codigo_Carrera AND s.Codigo_Semestre = ri.Codigo_Semestre
+                   INNER JOIN Clase AS c ON c.Seccion_Id = s.Id AND c.Modulo_Inicio = '{$moduloAnterior}' AND c.Modulo_Termino = '{$modulo}' AND c.Dia = '{$dias[$i]}'
+                  WHERE ctr.Codigo_Carrera = '{$codigoCarrera}' AND ctr.Semestre = '{$numeroSemestre}')
+                  UNION
+				  (SELECT c.Id,s.Codigo_Ramo,s.Numero_Seccion,c.Clase_Tipo,c.Dia,c.Modulo_Inicio,'NOO',c.RUT_Profesor
+                   FROM Carrera_Tiene_Ramos AS ctr 
+                   INNER JOIN Ramos_Impartidos AS ri ON ri.Codigo_Carrera = ctr.Codigo_Carrera AND ri.Codigo_Ramo = ctr.Codigo_Ramo AND ri.Codigo_Semestre = '{$codigoSemestre}' AND ri.Impartido = 1
+                   INNER JOIN Seccion AS s ON s.Codigo_Ramo = ri.Codigo_Ramo AND s.Codigo_Carrera = 'DEPTO' AND s.Codigo_Semestre = ri.Codigo_Semestre  AND s.Regimen = '{$regimen}'
+                   INNER JOIN Clase AS c ON c.Seccion_Id = s.Id AND c.Modulo_Inicio = '{$moduloAnterior}' AND c.Modulo_Termino = '{$modulo}' AND c.Dia = '{$dias[$i]}'
+                  WHERE ctr.Codigo_Carrera = '{$codigoCarrera}' AND ctr.Semestre = '{$numeroSemestre}')
+				  UNION
+                  (SELECT c.Id,CONCAT(s.Carrera,' ',s.Codigo_Ramo),se.Numero_Seccion,c.Clase_Tipo,c.Dia,c.Modulo_Inicio,'NO',c.RUT_Profesor
+                   FROM Solicitud AS s
+                   INNER JOIN Carrera_Tiene_Ramos AS ctr ON ctr.Codigo_Carrera = '{$codigoCarrera}' AND ctr.Codigo_Ramo = s.Codigo_Ramo AND ctr.Semestre = '{$numeroSemestre}'
+                   INNER JOIN Clase AS c ON c.Seccion_Id = s.Seccion_Asignada AND c.Modulo_Inicio = '{$moduloAnterior}' AND c.Modulo_Termino = '{$modulo}' AND c.Dia = '{$dias[$i]}'
+                   INNER JOIN Seccion AS se ON se.Id = s.Seccion_Asignada
+                  WHERE s.Carrera_Solicitante = '{$codigoCarrera}' AND s.Codigo_Semestre = '{$codigoSemestre}' AND s.Estado = 2);"; 
+		  */
+		  $sql = "SELECT c.id, s.codigo_ramo, s.numero_seccion, c.clase_tipo, i.dia, i.modulo_inicio,'SI',c.rut_profesor FROM clase as c, seccion as s, imparte as i WHERE i.id_clase_imp = c.id AND c.seccion_id = s.id AND i.modulo_inicio = '{$moduloAnterior}' AND i.modulo_termino = '{$modulo}' AND i.dia = '{$dias[$i]}' AND i.id_lab_imp = '{$lab}' AND c.codigo_semestre = '{$codigoSemestre}';"; 
+          $res = $mysqli->prepare($sql);
+          $res->execute();
+          $res->bind_result($claseId,$codigoRamo,$numeroSeccion,$claseTipo,$dia,$moduloInicio,$moduloTermino,$profesor);
+          $flag = 0;
+          while($res->fetch())
+          {
+            if($flag == 0) {
+              $flag = 1;
+              echo '<td class="drop" id="'.$dias[$i].'.'.$moduloInicio.'.'.$modulo.'">';
+            }
+            if($moduloTermino == 'SI')
+			{
+              if($profesor == NULL)
+                $profesor = 'Sin Profesor';
+              echo '<div class="item" id="'.$claseId.'">'.$codigoRamo.'<br>'.$numeroSeccion.'.'.$claseTipo.'<div class="prof">'.$profesor.'</div></div>';
+            }
+			
+			elseif($moduloTermino == 'NOO')
+			{
+			  echo '<div class="" id="'.$claseId.'" style="background-color: #c7c7c7;">'.$codigoRamo.'<br>'.$numeroSeccion.'.'.$claseTipo.'</div>';
+			}
+            elseif($moduloTermino == 'NO') {
+              if($profesor == NULL)
+                $profesor = 'Sin Profesor';
+              echo '<div class="" id="'.$claseId.'" style="background-color: #c7c7c7;">'.$codigoRamo.'<br>'.$numeroSeccion.'.'.$claseTipo.'<br>'.$profesor.'</div>';
+            }
+			
+          }
+          if($flag == 0)
+		  {
+		    if($modulo < 7 && $i < 5)
+              echo '<td></td>';
+			else if($modulo >= 7 && $i == 5)
+              echo '<td></td>';
+            else			  
+              echo '<td class="drop" id="'.$dias[$i].'.'.$moduloAnterior.'.'.$modulo.'"></td>';
+		  }
+          else
+            echo '</td>';
+          $res->free_result();  
+        }
+        echo '</tr>';
+      }
+    }
+  }
+  $res2->free_result();  
+  echo '</table></div>';
+}
+
+
 
 ?>
