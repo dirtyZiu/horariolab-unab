@@ -142,7 +142,11 @@ if(isset($_SESSION['usuario']))
         </form>        
         </ul>
 		<!--Fin Campo Listar-->
-		
+		</div>
+		</div>
+		<div id="content_footer"></div>
+    <div id="footer">
+		</div>
 </html>
 
 <?php

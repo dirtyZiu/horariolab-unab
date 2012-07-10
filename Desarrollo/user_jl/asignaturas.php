@@ -30,6 +30,14 @@ if(isset($_SESSION['usuario']))
   {
 	$answer = $usuario->eliminarRamoLab($_POST['codigo']);
   }
+  
+  if(isset($_POST['asigna']))
+	 {
+	  if($_POST['asigna'] == 'Asignar Software')
+	  $answer = $usuario->asignarSoftware($_POST['codigo'],$_POST['software']);
+	  if($_POST['asigna'] == 'No Asignar')
+	  $answer = $usuario->noAsignarSoftware($_POST['codigo'],$_POST['software']);
+	 }
 
 
 ?>
@@ -71,6 +79,22 @@ if(isset($_SESSION['usuario']))
       </div>
     </div>
     <div id="site_content">
+	
+      <?php
+	  if(isset($_POST['asigna']))
+	  {
+		echo'<div class="sidebar">';
+		//listar softwares no asignados al ramo (en combobox)
+		echo '<table><form method="post" name="asignarSoftware" target="_self"><input type="hidden" name="codigo" value='.$_POST['codigo'].' />
+          <tr><td>Asignar Software a '.$_POST['codigo'].'</td></tr><tr><td><select name="software">';
+		echo $usuario->listarSoftwareAsignar($_POST['codigo']);
+		echo '</select></td></tr><tr><td><input type="submit" name="asigna" value="Asignar Software" /></td></tr></form></table>';
+		//listar softwares asignados al ramo
+
+		echo $usuario->listarSoftwareAsignados($_POST['codigo']);
+		echo '</div>';		
+	  }
+	  ?>
       <div id="content">
 	  	<?php if(isset($answer)) echo '<span class="error">'.$answer.'</span>';?>
 		
@@ -153,6 +177,8 @@ if(isset($_SESSION['usuario']))
 		
       </div>
     </div>
+	<div id="content_footer"></div>
+    <div id="footer">
   </div>
 </body>
 </html>

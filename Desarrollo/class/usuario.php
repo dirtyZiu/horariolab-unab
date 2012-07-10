@@ -1514,14 +1514,14 @@ class JefeDeLaboratorio extends usuario {
     $res->execute();
     $res->bind_result($codigo,$nombre,$teo,$ayu,$lab,$tal);
   //echo '<table><tr><td>Código</td><td>Nombre</td><td>Teoría</td><td>Ayudantía</td><td>Laboratorio</td><td>Taller</td><td>Modificar</td><td>Eliminar</td></tr>';
-    echo '<table><tr><td>Código</td><td>Nombre</td><td>Teo</td><td>Ayu</td><td>Lab</td><td>Tal</td><td>Modificar</td><td>Eliminar</td></tr>';
+    echo '<table><tr><td>Código</td><td>Nombre</td><td>Teo</td><td>Ayu</td><td>Lab</td><td>Tal</td><td>Modificar</td><td>Eliminar</td></td><td>Asignar Software</td></tr>';
 	$flag = 0;
     while($res->fetch())
     {
       if($flag == 0)
         $flag = 1;
 	  echo '<form method="post" name="modificar" target="_self"><input type="hidden" name="codigo" value='.$codigo.' />';
-      echo '<tr><td>'.$codigo.'</td><td>'.$nombre.'</td><td>'.$teo.'</td><td>'.$ayu.'</td><td>'.$lab.'</td><td>'.$tal.'</td><td><input type="submit" name="modifica" value="Modificar" /></td><td><input type="submit" name="elimina" value="Eliminar" /></td></tr>';
+      echo '<tr><td>'.$codigo.'</td><td>'.$nombre.'</td><td>'.$teo.'</td><td>'.$ayu.'</td><td>'.$lab.'</td><td>'.$tal.'</td><td><input type="submit" name="modifica" value="Modificar" /></td><td><input type="submit" name="elimina" value="Eliminar" /></td><td><input type="submit" name="asigna" value="Asignar" /></td></tr>';
 	  echo '</form>';
 	  }
     if($flag == 0)
@@ -1726,6 +1726,81 @@ class JefeDeLaboratorio extends usuario {
     }
   }
 	*/
+	
+	public function listarSoftwareAsignar($idRamo) {
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "SELECT s.id_sw, s.nom_sw, s.version FROM software AS s WHERE s.id_sw NOT IN (SELECT sa.id_sw_asigna FROM software_asignado AS sa WHERE sa.codigo_asigna='{$idRamo}')";
+    $res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($id,$nombre,$version);
+    $flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      echo '<option value="'.$id.'">'.$nombre.' // '.$version.'</option>';
+    }
+    if($flag == 0)
+      echo '';
+    else
+		echo '';
+    $res->free_result();
+  }
+  
+  	public function listarSoftwareAsignados($idRamo) {
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "SELECT s.id_sw, s.nom_sw, s.version FROM software AS s WHERE s.id_sw IN (SELECT sa.id_sw_asigna FROM software_asignado AS sa WHERE sa.codigo_asigna='{$idRamo}')";
+    $res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($id,$nombre,$version);
+	echo '<table><tr><td colspan=2>Softwares Asignados</td></tr>';
+    $flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+	echo '<form method="post" name="NOasignarSoftware" target="_self">';
+    echo '<tr><td><input type="hidden" name="codigo" value='.$idRamo.' /><input type="hidden" name="software" value='.$id.' />'.$nombre.' // '.$version.'</td><td><input type="submit" name="asigna" value="No Asignar" /></td></tr>';
+    echo '</form>';
+	}
+    if($flag == 0)
+      echo '<tr><td colspan=2>Ninguno</td></tr>';
+    echo'</table>';
+    $res->free_result();
+  }
+  
+  public function asignarSoftware($idRamo,$idSw) {
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "INSERT INTO software_asignado(id_sw_asigna,codigo_asigna) VALUES ('{$idSw}','{$idRamo}');";
+    if(($mysqli->query($sql)) == true)
+    {
+      $answer = '*Software Asignado.';
+    }
+    else
+    {
+      $answer = '*Software no Asignado.';
+    }
+    return $answer;
+  }
+  
+    public function noAsignarSoftware($idRamo,$idSw) {
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "DELETE FROM software_asignado WHERE id_sw_asigna='{$idSw}' AND codigo_asigna='{$idRamo}';";
+    if(($mysqli->query($sql)) == true)
+    {
+      $answer = '*Software ahora no Asignado.';
+    }
+    else
+    {
+      $answer = '*no se pudo realizar la acción.';
+    }
+    return $answer;
+  }
+	
 }
 
 ?>
