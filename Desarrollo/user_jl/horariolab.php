@@ -32,6 +32,12 @@ if(isset($_SESSION['usuario']))
   if(isset($_GET['lab']) && isset($_GET['lab'])!=NULL){
 	$_SESSION['lab'] = $_GET['lab'];
   }
+  
+  //generar horario
+  if(isset($_POST['genera']) && $_POST['genera'] == 'Generar horario')
+  {
+	$answer = generarHorarioLab($_SESSION['codigoSemestre']);
+  }
     
 
   ?>
@@ -69,10 +75,36 @@ if(isset($_SESSION['usuario']))
                                                 revert: true
                                           });
                                           document.getElementById("resp").innerHTML = '<span class="error">Horario de la clase borrado.</span>';
+										  document.location.reload(true);
                                         }
                                         else if(ans == 2)
                                         {
                                           document.getElementById("resp").innerHTML = '<span class="error">No se puede borrar horario de la clase.</span>';
+                                        }
+                                }
+                        });
+						$('.mod td.drop').droppable({
+                                onDragEnter:function(){
+                                        $(this).addClass('over');
+                                },
+                                onDragLeave:function(){
+                                        $(this).removeClass('over');
+                                },
+                                onDrop:function(e,source){
+                                        $(this).removeClass('over');
+                                        window.location.replace('horariolab/modificar.php?id='+$(source).attr('id'));
+                                        if(ans == 1)
+                                        {
+                                          var b = $(source).addClass('assigned');
+                                          $('.last').append(b);
+                                          b.draggable({
+                                                revert: true
+                                          });
+                                          document.getElementById("resp").innerHTML = '<span class="error">Horario de la clase modificado.</span>';
+                                        }
+                                        else if(ans == 2)
+                                        {
+                                          document.getElementById("resp").innerHTML = '<span class="error">No se puede modificar horario de la clase.</span>';
                                         }
                                 }
                         });
@@ -82,6 +114,7 @@ if(isset($_SESSION['usuario']))
                         $('.down .item').draggable({
                                 revert:true
                         });
+						/*
 			$('.down td.drop').droppable({
 				onDragEnter:function(){
 					$(this).addClass('over');
@@ -125,6 +158,7 @@ if(isset($_SESSION['usuario']))
                                                 }
 				}
 			});
+			*/
 		});
 	</script>
 </head>
@@ -153,25 +187,8 @@ if(isset($_SESSION['usuario']))
       </div>
     </div>
 	<div id="site_content"><div id="content">
-	<!-- Formulario codigo semestre -->
-		<h1>Semestre "<?php echo $_SESSION['codigoSemestre']; ?>" y R&eacutegimen "<?php echo $_SESSION['regimen']; ?>" actualmente seleccionados.</h1>
-		<h2>Cambiar Valores</h2>
-		<table>
-        <form method="post" name="cambiarSemestre" target="_self">
-          <tr><td>C&oacutedigo semestre</td>
-          <td><select name="semestre">
-		  <?php seleccionarSemestres(); ?>
-		  </select></td>
-          <td><input id="btt" type="submit" name="cambiar" value="Cambiar Semestre"></input></td></tr>
-		  <tr><td>R&eacutegimen</td>
-		  <td><select name="regimen">
-		  <option value="D">D</option><option value="V">V</option>
-		  </select></td>
-		  <td><input id="btt" type="submit" name="cambiar" value="Cambiar Regimen"></input></td></tr>
-        </form>
-        </table>
-	
-
+	<?php if(isset($answer)) echo '<br></br><span class="error">'.$answer.'</span>';?>
+		<h1>Semestre "<?php echo $_SESSION['codigoSemestre']; ?>"</h1>
         <!-- insert the page content here -->
 		
 		<!-- Horario -->
@@ -182,9 +199,14 @@ if(isset($_SESSION['usuario']))
 				
 		// Cantidad de laboratorios existentes		
           $arrLaboratorios = arrLaboratorios();
-          echo '<table class="centerTable"><tr>';	
+          echo '<table class="centerTable"><tr>';
+		  if(isset($_GET['lab']))
+		  echo '<td><a href="horariolab.php">Sin Asignar</a></td>';
+		  else
+		  echo '<td class="dc"><a href="horariolab.php">Sin Asignar</a></td>';
 		  $sizeof_arr = sizeof($arrLaboratorios);
           for($i = 0;$i<$sizeof_arr;$i++)
+
           {
             if(isset($_GET['lab']) && $_GET['lab'] == ($arrLaboratorios[$i][0]))
               echo '<td class="dc"><a href="horariolab.php?lab='.($arrLaboratorios[$i][0]).'">'.($arrLaboratorios[$i][1]).'-'.($arrLaboratorios[$i][2]).'</a></td>';
@@ -192,23 +214,36 @@ if(isset($_SESSION['usuario']))
               echo '<td><a href="horariolab.php?lab='.($arrLaboratorios[$i][0]).'">'.($arrLaboratorios[$i][1]).'-'.($arrLaboratorios[$i][2]).'</a></td>';
           }
           echo '</tr></table>';
+		  
+		  // abajo: boton borrar asignatura del horario
+		  
+		  echo '<table><tr><td>';
+          if(isset($_GET['lab'])){
+		  echo '<div class="mod"><table><tr><td class="drop" style="border: 1px black solid;">Cambiar de Laboratorio<br>una clase</td></tr></table></div>';
+		  echo '</td><td>';
+		  echo '<div class="bin"><table><tr><td class="drop" style="border: 1px black solid;">Borrar del horario<br>una clase</td></tr></table></div>';
+          }else{
+		  echo '</td><td>';
+		  echo '<table><tr><td class="drop" style="border: 1px black solid;"><form method="post" name="generar" target="_self"><input id="btt" type="submit" name="genera" value="Generar horario"></input></form></td></tr></table>';
+		  }
+		  echo '</td></table><div id="resp"></div>';
 		
 		
 		//clases sin asignacion de horario en laboratorio
 		
           echo '<div class="up">';
-          if(isset($_GET['lab']))
-            verClasesSinHorarioLab($_SESSION['codigoSemestre'],$_SESSION['regimen']);
-          elseif(isset($_POST['lab']))
-            verClasesSinHorarioLab($_SESSION['codigoSemestre'],$_SESSION['regimen']);
+          if(!isset($_GET['lab'])){
+            verClasesSinHorarioLab($_SESSION['codigoSemestre']);
+			}
+			/*
+          elseif(!isset($_POST['lab']))
+            verClasesSinHorarioLab($_SESSION['codigoSemestre']);
+			*/
           echo '</div>';
+		  
+		  
 		
 		
-		// abajo: boton borrar asignatura del horario
-          echo '<div class="bin"><table><tr><td class="drop" style="border: 1px black solid;">Borrar el horario<br>de una clase</td></tr></table></div>';
-
-          echo '<div id="resp"></div>';
- 
 		// abajo: ver horario deacuerdo a laboratorio
 		
           if(isset($_GET['lab']) || (isset($_POST['submit']) && $_POST['submit'] == 'Cambiar' && isset($_POST['lab'])))
@@ -234,6 +269,10 @@ if(isset($_SESSION['usuario']))
 		  
 		// Cantidad de laboratorios existentes
           echo '<table class="centerTable"><tr>';
+		  if(isset($_GET['lab']))
+		  echo '<td><a href="horariolab.php">Sin Asignar</a></td>';
+		  else
+		  echo '<td class="dc"><a href="horariolab.php">Sin Asignar</a></td>';
           for($i = 0;$i<$sizeof_arr;$i++)
           {
             if(isset($_GET['lab']) && $_GET['lab'] == ($arrLaboratorios[$i][0]))
@@ -243,6 +282,28 @@ if(isset($_SESSION['usuario']))
           }
           echo '</tr></table>';
         ?>
+		
+		<!-- Formulario codigo semestre -->
+		<h1>Semestre "<?php echo $_SESSION['codigoSemestre']; ?>" y R&eacutegimen "<?php echo $_SESSION['regimen']; ?>" actualmente seleccionados.</h1>
+		<h2>Cambiar Valores</h2>
+		<table>
+        <form method="post" name="cambiarSemestre" target="_self">
+          <tr><td>C&oacutedigo semestre</td>
+          <td><select name="semestre">
+		  <?php seleccionarSemestres(); ?>
+		  </select></td>
+          <td><input id="btt" type="submit" name="cambiar" value="Cambiar Semestre"></input></td></tr>
+		  
+		  <tr><td>R&eacutegimen</td>
+		  <td><select name="regimen">
+		  <option value="D">D</option><option value="V">V</option>
+		  </select></td>
+		  <td><input id="btt" type="submit" name="cambiar" value="Cambiar Regimen"></input></td></tr>
+		  
+        </form>
+        </table>
+		
+		
         <br><br>
       </div>
     </div>

@@ -1465,11 +1465,11 @@ function verHorarioDepto($regimen)
     $res->free_result();
   }
   
-  function verClasesSinHorarioLab($codigoSemestre,$regimen)
+  function verClasesSinHorarioLab($codigoSemestre)
 {
   global $mysqli,$db_host,$db_user,$db_pass,$db_database;
   $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);  
-  $sql = "SELECT c.id, rul.codigo, s.numero_seccion, c.clase_tipo, c.rut_profesor FROM clase as c, seccion as s, ramo_usa_lab as rul WHERE s.id = c.seccion_id AND s.codigo_ramo = rul.codigo AND c.codigo_semestre='{$codigoSemestre}' AND ((c.clase_tipo='Teoria' AND rul.teoria='si') OR (c.clase_tipo='Ayudantia' AND rul.ayudantia='si') OR (c.clase_tipo='Laboratorio' AND rul.laboratorio='si') OR (c.clase_tipo='Taller' AND rul.taller='si')) AND s.regimen = '{$regimen}' AND c.id NOT IN (select i.id_clase_imp FROM imparte as i WHERE i.semestre='{$codigoSemestre}')";
+  $sql = "SELECT c.id, rul.codigo, s.numero_seccion, c.clase_tipo, c.rut_profesor FROM clase as c, seccion as s, ramo_usa_lab as rul WHERE s.id = c.seccion_id AND s.codigo_ramo = rul.codigo AND c.codigo_semestre='{$codigoSemestre}' AND ((c.clase_tipo='Teoria' AND rul.teoria='si') OR (c.clase_tipo='Ayudantia' AND rul.ayudantia='si') OR (c.clase_tipo='Laboratorio' AND rul.laboratorio='si') OR (c.clase_tipo='Taller' AND rul.taller='si')) AND c.id NOT IN (select i.id_clase_imp FROM imparte as i WHERE i.semestre='{$codigoSemestre}')";
   $res = $mysqli->prepare($sql);
   $res->execute();
   $res->bind_result($idClase,$codigoRamo,$numeroSeccion,$tipoClase,$profesor);
@@ -1704,6 +1704,239 @@ function verHorarioLab($codigoSemestre,$lab,$regimen)
   echo '</table></div>';
 }
 
+function generarHorarioLab($semestre){
+global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+  //toma todas las clases que usan lab
+  $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);  
+  $sql = "SELECT c.id, s.regimen, c.modulo_inicio, c.modulo_termino, c.dia, sw.grupo_sw_comp FROM clase as c, seccion as s, ramo_usa_lab as rul, software_asignado as sa, software as sw WHERE s.id = c.seccion_id AND s.codigo_ramo = rul.codigo AND c.codigo_semestre='{$semestre}' AND rul.codigo = sa.codigo_asigna AND sa.id_sw_asigna = sw.id_sw AND ((c.clase_tipo='Teoria' AND rul.teoria='si') OR (c.clase_tipo='Ayudantia' AND rul.ayudantia='si') OR (c.clase_tipo='Laboratorio' AND rul.laboratorio='si') OR (c.clase_tipo='Taller' AND rul.taller='si')) ORDER BY sw.grupo_sw_comp;";
+  $res = $mysqli->prepare($sql);
+  $res->execute();
+  $res->bind_result($cId,$cRegimen,$cModIni,$cModTer,$cDia,$cGrupoComp);
+  //toma todos los laboratorios
+  $mysqli2 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+  $sql2 = "SELECT id_lab FROM laboratorio;";
+  $res2 = $mysqli2->prepare($sql2);
+  $res2->execute();
+  $res2->bind_result($lId);
+  //flag del primer dato
+  $flag = 0;  
+  //arreglo de datos ingresados
+  $array = array();
+  //arreglo de labs usados
+  $arrayL = array();
+  while($res2->fetch())
+		{
+		if($flag == 0){
+		$flag = 1;
+		$arrLab = array();
+		}
+		$arrLab[] = $lId;
+		}
+	$labTotales = count($arrLab);
+	if ($labTotales > 0){
+	//indice de laboratorios y mod ocupados
+	$iLab = 0;
+	$flag = 0;
+    while($res->fetch())
+    {
+	//flag de clase ya asignada
+	$flagClase = true;
+      if($cModIni != NULL){
+		$flagClase = true;
+		while($flagClase)
+		{
+		if($flag == 0){
+		
+		$flag = 1;
+		//primer dato arreglo de ingresados
+		$array[$cId] = array($cRegimen,$cModIni,$cModTer,$cDia,$arrLab[$iLab]);
+		$arrayL[$arrLab[$iLab]] = array($cRegimen,$cModIni,$cDia);
+		$flagClase = false;
+		
+		} else {
+		if($array[$cId]!=NULL){
+		$flagClase = false;
+		}else{
+		//flag de modulo en uso en lab
+		$flagMod = true;
+		while($flagMod)
+		{
+		if(($arrayL[$arrLab[$iLab]][0] != $array[$cId][0])&&($arrayL[$arrLab[$iLab]][1] != $array[$cId][1])&&($arrayL[$arrLab[$iLab]][2] != $array[$cId][2]))
+		{
+		$array[$cId] = array($cRegimen,$cModIni,$cModTer,$cDia,$arrLab[$iLab]);
+		$arrayL[$arrLab[$iLab]] = array($cRegimen,$cModIni,$cDia);
+		$flagClase = false;
+		$flagMod = false;
+		}else{
+		$iLab++;
+		}
+		if($iLab >= $labTotales)
+		{
+		$iLab=0;
+		$flagClase = false;
+		$flagMod = false;
+		}
+		}
+		}		
+		}
+		}
+	  }
+    }
+	}
+    if($flag == 0)
+      echo '';
+    else
+	//Limpiar Horario
+	$mysqli3 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql3 = "DELETE FROM imparte WHERE semestre = '{$semestre}';";
+	if(($mysqli3->query($sql3)) == true)
+    {
+
+	//Insertar datos
+      $Str='INSERT INTO imparte(id_lab_imp, id_clase_imp, Modulo_Inicio, Modulo_Termino, Dia, semestre) VALUES ';
+	  foreach ($array as $clave => $valor) {
+		$Str.="('{$valor[4]}','{$clave}','{$valor[1]}','{$valor[2]}','{$valor[3]}','{$semestre}'),";
+	  }
+	  $Str = substr($Str, 0, -1).';';
+	  $mysqli1 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+	  $sql1 = $Str;
+      if(($mysqli1->query($sql1)) == true)
+    {
+      return 'Tarea Realizada';
+    }
+    else
+    {
+      return 'Tarea NO Realizada';
+    }
+    $res->free_result();
+	
+    }
+    else
+    {
+      return 'Error al limpiar horario';
+    }
+}
+
+  function arrInfoClases($codigoSemestre,$id)
+{
+  global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+  $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);  
+  $sql = "SELECT c.id, s.nrc, rul.codigo, r.nombre, s.numero_seccion, c.clase_tipo FROM clase as c, seccion as s, ramo_usa_lab as rul, ramo as r WHERE c.id='{$id}' AND s.id = c.seccion_id AND s.codigo_ramo = rul.codigo AND s.codigo_ramo = r.codigo AND c.codigo_semestre='{$codigoSemestre}' AND ((c.clase_tipo='Teoria' AND rul.teoria='si') OR (c.clase_tipo='Ayudantia' AND rul.ayudantia='si') OR (c.clase_tipo='Laboratorio' AND rul.laboratorio='si') OR (c.clase_tipo='Taller' AND rul.taller='si')) LIMIT 0, 1";
+  // AND c.id NOT IN (select i.id_clase_imp FROM imparte as i WHERE i.semestre='{$codigoSemestre}')
+  $res = $mysqli->prepare($sql);
+  $res->execute();
+  $res->bind_result($idClase,$nrc,$codigoRamo,$nombreRamo,$numeroSeccion,$tipoClase);
+  $flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      $arr = array($idClase,$nrc,$codigoRamo,$nombreRamo,$numeroSeccion,$tipoClase);
+    }
+    if($flag == 0)
+      echo '';
+    else
+	//Asignar horarios
+      return $arr;
+    $res->free_result();
+}
+
+  function borrarDeHorario($idClase,$codigoSemestre)
+{
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "DELETE FROM imparte WHERE id_clase_imp = '{$idClase}' AND semestre = '{$codigoSemestre}';";
+    if(($mysqli->query($sql)) == true)
+    {
+      return 'modificado exitosamente';
+    }
+    else
+    {
+      return 'error al modificar';
+    }  
+}
+
+  function modificarDeHorario($idClase,$newIdLab,$codigoSemestre)
+{	
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+	//toma los modulos de la clase a mover
+	$mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);  
+	$sql = "SELECT id_lab_imp, modulo_inicio, modulo_termino, dia FROM imparte WHERE id_clase_imp='{$idClase}' AND semestre='{$codigoSemestre}' LIMIT 0 , 1;";
+	$res = $mysqli->prepare($sql);
+	$res->execute();
+	$res->bind_result($oil,$mi,$mt,$d);
+	$flag = 0;
+	$oldIdLab = 0;
+	$modIni = 0;
+	$modTer = 0;
+	$dia = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+      {
+        $flag = 1;
+      }
+	$oldIdLab = $oil;
+	$modIni = $mi;
+	$modTer = $mt;
+	$dia = $d;
+    }
+	if($flag == 0){ return 'No se pudo realizar la acción.'; }
+	//Busca si existe dato a donde se moverá
+	$mysqli1 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql1 = "SELECT id_clase_imp FROM imparte WHERE semestre='{$codigoSemestre}' AND modulo_inicio='{$modIni}' AND modulo_termino='{$modTer}' AND dia='{$dia}' AND id_lab_imp='{$newIdLab}' LIMIT 0 , 1;";
+    $res1 = $mysqli1->prepare($sql1);
+    $res1->execute();
+    $res1->bind_result($ic);
+    $flag = 0;
+	$idClase2 = 0;
+    while($res1->fetch())
+    {
+      if($flag == 0)
+      {
+        $flag = 1;
+      }
+      $idClase2 = $ic;
+    }
+	if($flag == 0){
+    //no habian datos, así que solo se mueve al horario.
+	$mysqli2 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql2 = "UPDATE imparte SET id_lab_imp='{$newIdLab}' WHERE id_clase_imp = '{$idClase}' AND semestre = '{$codigoSemestre}';";
+    if(($mysqli2->query($sql2)) == true)
+    {
+      return 'modificado exitosamente';
+    }
+    else
+    {
+      return 'error al modificar';
+    } 
+	}
+    else
+	{
+	//si habian datos, así que se deben intercambiar horarios.
+	$mysqli2 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql2 = "UPDATE imparte SET id_lab_imp='{$newIdLab}' WHERE id_clase_imp = '{$idClase}' AND semestre = '{$codigoSemestre}';";
+    if(($mysqli2->query($sql2)) == true)
+    {
+		$mysqli3 = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+		$sql3 = "UPDATE imparte SET id_lab_imp='{$oldIdLab}' WHERE id_clase_imp = '{$idClase2}' AND semestre = '{$codigoSemestre}';";
+		if(($mysqli3->query($sql3)) == true)
+		{
+		return 'modificado exitosamente';
+		}
+		else
+		{
+		return 'error al modificar';
+		} 
+    }
+    else
+    {
+      return 'error al modificar';
+    } 
+	}
+
+     
+}
 
 
 ?>

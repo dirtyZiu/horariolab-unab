@@ -13,22 +13,24 @@ if(isset($_SESSION['usuario']))
 
   if(isset($_POST['agrega']) && $_POST['agrega'] == 'Agregar software')
   {
-    if(isset($_POST['nombre']) && $_POST['nombre'] != '' && $_POST['version'] != '')
+    if(isset($_POST['nombre']) && $_POST['nombre'] != '' && $_POST['version'] != '' && $_POST['grupo'] != '')
     {
-     $answer = $usuario->crearSoftware($_POST['nombre'],$_POST['version']);
+     $answer = $usuario->crearSoftware($_POST['nombre'],$_POST['version'],$_POST['grupo']);
     }
     else
     {
       if($_POST['nombre'] == '')
         $nombreerror = '*Debe ingresar el nombre.';
       if($_POST['version'] == '')
-        $versionerror = '*Debe ingresar una version.';
+        $versionerror = '*Debe ingresar una versión.';
+	  if($_POST['grupo'] == '')
+        $versionerror = '*Debe ingresar número de grupo.';
     }
   }
   
       if(isset($_POST['elimina']))
   {
-	$answer = $usuario->eliminarSoftware($_POST['elimina']);
+	$answer = $usuario->eliminarSoftware($_POST['idSw']);
   }
 
 ?>
@@ -69,22 +71,24 @@ if(isset($_SESSION['usuario']))
       </div>
     </div>
     <div id="site_content">
-      <div class="sidebar">
-      <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-      </div>
+	
+	
+	  
       <div id="content">
 	<!--Inicio Campo Agregar-->
-	  <h2>Agregar Software:</h2>
+	  <h1>Agregar Software:</h1>
 		
 		<table>
         <form method="post" name="agregar" target="_self">
-          <tr><td>Nombre de software</td><td>Versi&oacuten</td></tr>
+          <tr><td>Nombre de software</td><td>Versi&oacuten</td><td>Grupo Compatible</td></tr>
           <tr><td><input type="text" name="nombre" value="" maxlength="30" class="xl"></input></td>
           <td><input type="text" name="version" value="" maxlength="30"></input></td>
+		  <td><input type="text" name="grupo" value="" maxlength="30"></input></td>
           <td><input id="btt" type="submit" name="agrega" value="Agregar software"></input></td></tr>
 		  
           <tr><td><?php if(isset($nombreerror)) echo '<span class="error">'.$nombreerror.'</span>';?></td>
               <td><?php if(isset($versionerror)) echo '<span class="error">'.$versionerror.'</span>';?></td>
+			  <td><?php if(isset($grupoerror)) echo '<span class="error">'.$grupoerror.'</span>';?></td>
           </tr>
 		  
         </form>
@@ -94,12 +98,11 @@ if(isset($_SESSION['usuario']))
 	  <?php
 		if(isset($_POST['modifica']))
 		{
-		$dato=$_POST['modifica'];		
 		  if($_POST['modifica'] == 'Modificar software')
 			{
-			if(isset($_POST['nombre2']) && $_POST['nombre2'] != '' && $_POST['version2'] != '')
+			if(isset($_POST['nombre2']) && $_POST['nombre2'] != '' && $_POST['version2'] != '' && $_POST['grupo2'] != '')
 			{
-			$answer = $usuario->modificarSoftware($_POST['id2'],$_POST['nombre2'],$_POST['version2']);
+			$answer = $usuario->modificarSoftware($_POST['id2'],$_POST['nombre2'],$_POST['version2'],$_POST['grupo2']);
 			}
 			else
 			{
@@ -107,17 +110,21 @@ if(isset($_SESSION['usuario']))
 			$edificioerror2 = '*Debe ingresar el nombre <br>';
 			if($_POST['version2'] == '')
 			$salaerror2 = '*Debe ingresar la version. <br>';
+			if($_POST['grupo2'] == '')
+			$grupoerror2 = '*Debe ingresar el grupo compatible. <br>';
     }
   } else {
-		
+		$dato=$_POST['idSw'];
+		$arrDatos = $usuario->obtenerDatosSw($dato);
 		?>
 		<h2>Modificar Software:</h2>
 		<table>
 		<form method="post" name="modificar" target="_self">
-		<tr><td>ID</td><td>Nombre de software</td><td>Versi&oacuten</td></tr>
-		<tr><td><input type="hidden" name="id2" value="<?php echo $dato; ?>"><?php echo $_POST['modifica']; ?></input></td>
-		<td><input type="text" name="nombre2" value="<?php $usuario->obtenerNombreSw($dato); ?>" maxlength="30" class="xl"></input></td>
-		<td><input type="text" name="version2" value="<?php $usuario->obtenerVersionSw($dato); ?>" maxlength="30"></input></td>
+		<tr><td>ID</td><td>Nombre de software</td><td>Versi&oacuten</td><td>Grupo Compatible</td></tr>
+		<tr><td><input type="hidden" name="id2" value="<?php echo $dato; ?>"><?php echo $dato; ?></input></td>
+		<td><input type="text" name="nombre2" value="<?php echo $arrDatos[0]; ?>" maxlength="30" class="xl"></input></td>
+		<td><input type="text" name="version2" value="<?php echo $arrDatos[1]; ?>" maxlength="30"></input></td>
+		<td><input type="text" name="grupo2" value="<?php echo $arrDatos[2]; ?>" maxlength="30"></input></td>
 		<td><input id="btt" type="submit" name="modifica" value="Modificar software"></input></td></tr>
         </form>
         </table>
@@ -128,9 +135,10 @@ if(isset($_SESSION['usuario']))
 	  <!--Fin Campo Modificar-->	  		  
       <?php if(isset($edificioerror2)) echo '<span class="error">'.$edificioerror2.'</span>';?>
       <?php if(isset($salaerror2)) echo '<span class="error">'.$salaerror2.'</span>';?> 
+	  <?php if(isset($grupoerror2)) echo '<span class="error">'.$grupoerror2.'</span>';?> 
 	  <?php if(isset($answer)) echo '<span class="error">'.$answer.'</span>';?>
 	  <!--Inicio Campo Listar-->
-	  <h2>Lista de software:</h2><ul>
+	  <h1>Lista de software:</h1><ul>
 	  
 	  <form method="post" name="listar" target="_self">
 		<?php

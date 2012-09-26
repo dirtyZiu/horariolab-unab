@@ -83,10 +83,10 @@ if(isset($_SESSION['usuario']))
       <?php
 	  if(isset($_POST['asigna']))
 	  {
-		echo'<div class="sidebar">';
+		echo'<div class="sidebar"><h2>Asignar Software</h2>';
 		//listar softwares no asignados al ramo (en combobox)
 		echo '<table><form method="post" name="asignarSoftware" target="_self"><input type="hidden" name="codigo" value='.$_POST['codigo'].' />
-          <tr><td>Asignar Software a '.$_POST['codigo'].'</td></tr><tr><td><select name="software">';
+          <tr><td>Asignar Software a '.$_POST['codigo'].'</td></tr><tr><td><select name="software" width="200" style="width: 200px">';
 		echo $usuario->listarSoftwareAsignar($_POST['codigo']);
 		echo '</select></td></tr><tr><td><input type="submit" name="asigna" value="Asignar Software" /></td></tr></form></table>';
 		//listar softwares asignados al ramo

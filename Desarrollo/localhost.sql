@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 10-07-2012 a las 15:11:23
+-- Tiempo de generación: 26-09-2012 a las 14:18:02
 -- Versión del servidor: 5.5.24-log
 -- Versión de PHP: 5.3.13
 
@@ -760,7 +760,7 @@ INSERT INTO `clase` (`Id`, `Clase_Tipo`, `Seccion_Id`, `RUT_Profesor`, `Modulo_I
 (1, 'Teoria', 1, 163546027, NULL, NULL, NULL, 201220),
 (2, 'Teoria', 1, NULL, NULL, NULL, NULL, 201220),
 (3, 'Ayudantia', 1, NULL, NULL, NULL, NULL, 201220),
-(4, 'Laboratorio', 1, NULL, NULL, NULL, NULL, 201220),
+(4, 'Laboratorio', 1, NULL, 1, 2, 'Lunes', 201220),
 (5, 'Teoria', 2, NULL, NULL, NULL, NULL, 201220),
 (6, 'Teoria', 2, NULL, NULL, NULL, NULL, 201220),
 (7, 'Ayudantia', 2, NULL, NULL, NULL, NULL, 201220),
@@ -836,8 +836,15 @@ CREATE TABLE IF NOT EXISTS `imparte` (
   `Modulo_Termino` int(11) NOT NULL,
   `Dia` varchar(12) NOT NULL,
   `semestre` int(11) NOT NULL,
-  PRIMARY KEY (`id_clase_imp`)
+  PRIMARY KEY (`id_clase_imp`,`semestre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `imparte`
+--
+
+INSERT INTO `imparte` (`id_lab_imp`, `id_clase_imp`, `Modulo_Inicio`, `Modulo_Termino`, `Dia`, `semestre`) VALUES
+(12, 4, 1, 2, 'Lunes', 201220);
 
 -- --------------------------------------------------------
 
@@ -850,15 +857,47 @@ CREATE TABLE IF NOT EXISTS `laboratorio` (
   `edificio` varchar(3) NOT NULL COMMENT 'edificio en donde se encuentra el laboratorio (ex: R3)',
   `sala` varchar(6) NOT NULL COMMENT 'sala en donde se encuentra (ex: lab402)',
   PRIMARY KEY (`id_lab`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
 
 --
 -- Volcado de datos para la tabla `laboratorio`
 --
 
 INSERT INTO `laboratorio` (`id_lab`, `edificio`, `sala`) VALUES
-(10, 'R3', '406'),
-(11, 'R3', '401');
+(10, 'R3', '405'),
+(12, 'R3', '401');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `laboratorio_tiene_carrera`
+--
+
+CREATE TABLE IF NOT EXISTS `laboratorio_tiene_carrera` (
+  `id_lab` int(11) NOT NULL,
+  `codigo_carrera` varchar(9) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `laboratorio_tiene_carrera`
+--
+
+INSERT INTO `laboratorio_tiene_carrera` (`id_lab`, `codigo_carrera`) VALUES
+(10, ''),
+(10, ''),
+(10, ''),
+(10, 'UNAB11500'),
+(10, 'UNAB11502'),
+(12, 'UNAB12200'),
+(12, 'UNAB21500'),
+(12, 'UNAB11500'),
+(10, 'UNAB12200'),
+(10, 'UNAB19200'),
+(10, 'UNAB21500'),
+(10, 'UNAB21502'),
+(10, 'UNAB29200'),
+(10, ''),
+(10, '');
 
 -- --------------------------------------------------------
 
@@ -1446,17 +1485,19 @@ CREATE TABLE IF NOT EXISTS `software` (
   `id_sw` int(11) NOT NULL AUTO_INCREMENT,
   `nom_sw` varchar(30) NOT NULL,
   `version` varchar(30) NOT NULL,
+  `grupo_sw_comp` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_sw`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 --
 -- Volcado de datos para la tabla `software`
 --
 
-INSERT INTO `software` (`id_sw`, `nom_sw`, `version`) VALUES
-(3, 'Oracle Database', '11g'),
-(4, 'JCreator Pro.', 'v.5.00'),
-(5, 'NetBeans IDE', '7.1.2');
+INSERT INTO `software` (`id_sw`, `nom_sw`, `version`, `grupo_sw_comp`) VALUES
+(3, 'Oracle Database', '11g', 2),
+(4, 'JCreator Pro.', 'v.5.00', 0),
+(5, 'NetBeans IDE', '7.1.2', 2),
+(7, 'Autodesk Maya', '2012 64-bits', 1);
 
 -- --------------------------------------------------------
 
@@ -1478,8 +1519,7 @@ CREATE TABLE IF NOT EXISTS `software_asignado` (
 INSERT INTO `software_asignado` (`id_sw_asigna`, `codigo_asigna`) VALUES
 (3, 'IEC220'),
 (5, 'IEC220'),
-(4, 'IET001'),
-(5, 'IET001');
+(4, 'IET001');
 
 -- --------------------------------------------------------
 

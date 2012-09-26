@@ -1340,13 +1340,15 @@ class JefeDeLaboratorio extends usuario {
     $res = $mysqli->prepare($sql);
     $res->execute();
     $res->bind_result($id,$edificio,$sala);
-    echo '<table><tr><td>ID</td><td>Edificio</td><td>Sala</td><td>Modificar</td><td>Eliminar</td></tr>';
+    echo '<table><tr><td>ID</td><td>Edificio</td><td>Sala</td><td>Modificar</td><td>Eliminar</td><td>Asignar Carrera</td></tr>';
     $flag = 0;
     while($res->fetch())
     {
       if($flag == 0)
         $flag = 1;
-      echo '<tr><td>'.$id.'</td><td>'.$edificio.'</td><td>'.$sala.'</td><td><input type="submit" name="modifica" value=" '.$id.' ">Modificar</input></td><td><input type="submit" name="elimina" value=" '.$id.' ">Eliminar</input></td>';
+	  echo '<form method="post" name="modificar" target="_self"><input type="hidden" name="idLab" value='.$id.' />';
+      echo '<tr><td>'.$id.'</td><td>'.$edificio.'</td><td>'.$sala.'</td><td><input type="submit" name="modifica" value="Modificar"></input></td><td><input type="submit" name="elimina" value="Eliminar"></input></td><td><input type="submit" name="asigna" value="Asignar"></input></td>';
+	  echo '</form>';
     }
     if($flag == 0)
       echo '<tr><td>No hay laboratorios.</td><td></td><td></td></tr></table>';
@@ -1355,52 +1357,30 @@ class JefeDeLaboratorio extends usuario {
     $res->free_result();
   }
   
-    public function obtenerSalaLab($idLab) {
+    public function obtenerDatosLab($idLab) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-	$sql = "SELECT sala FROM laboratorio WHERE id_lab='{$idLab}';";
+	$sql = "SELECT edificio, sala FROM laboratorio WHERE id_lab='{$idLab}';";
 	$res = $mysqli->prepare($sql);
     $res->execute();
-    $res->bind_result($dato);
+    $res->bind_result($dato1,$dato2);
 		$flag = 0;
     while($res->fetch())
     {
       if($flag == 0)
         $flag = 1;
-      	echo $dato;
+      $datos=array($dato1,$dato2);
     }
     if($flag == 0)
-      echo '';
-    else
-      echo '';
+      $datos=array('','');
     $res->free_result();
-	}
-	
-	public function obtenerEdificioLab($idLab) {
-    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
-    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-	$sql = "SELECT edificio FROM laboratorio WHERE id_lab='{$idLab}';";
-	$res = $mysqli->prepare($sql);
-    $res->execute();
-    $res->bind_result($dato);
-	$flag = 0;
-    while($res->fetch())
-    {
-      if($flag == 0)
-        $flag = 1;
-      	echo $dato;
-    }
-    if($flag == 0)
-      echo '';
-    else
-      echo '';
-    $res->free_result();
+	return $datos;
 	}
   
-	public function crearSoftware($nomSoftware,$verSoftware) {
+	public function crearSoftware($nomSoftware,$verSoftware,$varGrupo) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-    $sql = "INSERT INTO software(nom_sw,version) VALUES ('{$nomSoftware}','{$verSoftware}');";
+    $sql = "INSERT INTO software(nom_sw,version,grupo_sw_comp) VALUES ('{$nomSoftware}','{$verSoftware}','{$varGrupo}');";
     if(($mysqli->query($sql)) == true)
     {
       $answer = '*Software agregado.';
@@ -1412,10 +1392,10 @@ class JefeDeLaboratorio extends usuario {
     return $answer;
   }
   
-	public function modificarSoftware($idSw,$nomSw,$verSw) {
+	public function modificarSoftware($idSw,$nomSw,$verSw,$varGrupo) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-	$sql = "UPDATE software SET nom_sw='{$nomSw}',version='{$verSw}' WHERE id_sw='{$idSw}';";
+	$sql = "UPDATE software SET nom_sw='{$nomSw}',version='{$verSw}',grupo_sw_comp='{$varGrupo}' WHERE id_sw='{$idSw}';";
     if(($mysqli->query($sql)) == true)
     {
       $answer = '*Software modificado.';
@@ -1445,17 +1425,21 @@ class JefeDeLaboratorio extends usuario {
 	public function listarSoftware() {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-    $sql = "SELECT id_sw, nom_sw, version FROM software";
+    $sql = "SELECT grupo_sw_comp, id_sw, nom_sw, version FROM software ORDER BY grupo_sw_comp";
     $res = $mysqli->prepare($sql);
     $res->execute();
-    $res->bind_result($id,$nombre,$version);
-    echo '<table><tr><td>ID</td><td>Nombre Software</td><td>Versión</td><td>Modificar</td><td>Eliminar</td></tr>';
+    $res->bind_result($grupo,$id,$nombre,$version);
+    echo '<table><tr><td>Grupo Compatible</td><td>ID</td><td>Nombre Software</td><td>Versión</td><td>Modificar</td><td>Eliminar</td></tr>';
     $flag = 0;
     while($res->fetch())
     {
       if($flag == 0)
         $flag = 1;
-      echo '<tr><td>'.$id.'</td><td>'.$nombre.'</td><td>'.$version.'</td><td><input type="submit" name="modifica" value=" '.$id.' ">Modificar</input></td><td><input type="submit" name="elimina" value=" '.$id.' ">Eliminar</input></td>';
+      
+	  
+	  echo '<form method="post" name="modificar" target="_self"><input type="hidden" name="idSw" value='.$id.' />';
+      echo '<tr><td>'.$grupo.'</td><td>'.$id.'</td><td>'.$nombre.'</td><td>'.$version.'</td><td><input type="submit" name="modifica" value="Modificar"></input></td><td><input type="submit" name="elimina" value="Eliminar"></input></td>';
+	  echo '</form>';
     }
     if($flag == 0)
       echo '<tr><td>No hay software.</td><td></td><td></td></tr></table>';
@@ -1464,46 +1448,24 @@ class JefeDeLaboratorio extends usuario {
     $res->free_result();
   }
   
-  	public function obtenerNombreSw($idSw) {
+  	public function obtenerDatosSw($idSw) {
     global $mysqli,$db_host,$db_user,$db_pass,$db_database;
     $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-	$sql = "SELECT nom_sw FROM software WHERE id_sw='{$idSw}';";
+	$sql = "SELECT nom_sw, version, grupo_sw_comp FROM software WHERE id_sw='{$idSw}';";
 	$res = $mysqli->prepare($sql);
     $res->execute();
-    $res->bind_result($dato);
+    $res->bind_result($dato1,$dato2,$dato3);
 	$flag = 0;
     while($res->fetch())
     {
       if($flag == 0)
         $flag = 1;
-      	echo $dato;
+		$datos=array($dato1,$dato2,$dato3);
     }
     if($flag == 0)
-      echo '';
-    else
-      echo '';
+      $datos=array('','','');
     $res->free_result();
-	}
-    	
-	public function obtenerVersionSw($idSw) {
-    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
-    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
-	$sql = "SELECT version FROM software WHERE id_sw='{$idSw}';";
-	$res = $mysqli->prepare($sql);
-    $res->execute();
-    $res->bind_result($dato);
-	$flag = 0;
-    while($res->fetch())
-    {
-      if($flag == 0)
-        $flag = 1;
-      	echo $dato;
-    }
-    if($flag == 0)
-      echo '';
-    else
-      echo '';
-    $res->free_result();
+	return $datos;
 	}
 	
 	public function listarAsignaturasUsanLab(){
@@ -1792,7 +1754,82 @@ class JefeDeLaboratorio extends usuario {
     $sql = "DELETE FROM software_asignado WHERE id_sw_asigna='{$idSw}' AND codigo_asigna='{$idRamo}';";
     if(($mysqli->query($sql)) == true)
     {
-      $answer = '*Software ahora no Asignado.';
+      $answer = '*Software ahora no Asignado a Asignatura.';
+    }
+    else
+    {
+      $answer = '*no se pudo realizar la acción.';
+    }
+    return $answer;
+  }
+	
+	//modificar
+	public function listarCarreraAsignar($idLab) {
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "SELECT c.codigo, c.nombre_carrera FROM carrera AS c WHERE c.codigo NOT IN (SELECT lc.codigo_carrera FROM laboratorio_tiene_carrera AS lc WHERE lc.id_lab='{$idLab}')";
+    $res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($codigo,$nombre);
+    $flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+      echo '<option value="'.$codigo.'">'.$codigo.' // '.$nombre.'</option>';
+    }
+    if($flag == 0)
+      echo '';
+    else
+		echo '';
+    $res->free_result();
+  }
+  
+  	public function listarCarrerasAsignadas($idLab) {
+    global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "SELECT c.codigo, c.nombre_carrera FROM carrera AS c WHERE c.codigo IN (SELECT lc.codigo_carrera FROM laboratorio_tiene_carrera AS lc WHERE lc.id_lab='{$idLab}')";
+    $res = $mysqli->prepare($sql);
+    $res->execute();
+    $res->bind_result($codigo,$nombre);
+	echo '<table><tr><td colspan=2>Carreras Asignadas</td></tr>';
+    $flag = 0;
+    while($res->fetch())
+    {
+      if($flag == 0)
+        $flag = 1;
+	echo '<form method="post" name="NOasignarSoftware" target="_self">';
+    echo '<tr><td><input type="hidden" name="idLab" value='.$idLab.' /><input type="hidden" name="carrera" value='.$codigo.' />'.$codigo.' // '.$nombre.'</td><td><input type="submit" name="asigna" value="No Asignar" /></td></tr>';
+    echo '</form>';
+	}
+    if($flag == 0)
+      echo '<tr><td colspan=2>Ninguno</td></tr>';
+    echo'</table>';
+    $res->free_result();
+  }
+  
+  public function asignarCarrera($idLab,$codigo) {
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "INSERT INTO laboratorio_tiene_carrera(id_lab,codigo_carrera) VALUES ('{$idLab}','{$codigo}');";
+    if(($mysqli->query($sql)) == true)
+    {
+      $answer = '*Carrera Asignada.';
+    }
+    else
+    {
+      $answer = '*Carrera no Asignada.';
+    }
+    return $answer;
+  }
+  
+    public function noAsignarCarrera($idLab,$codigo) {
+	global $mysqli,$db_host,$db_user,$db_pass,$db_database;
+    $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_database);
+    $sql = "DELETE FROM laboratorio_tiene_carrera WHERE id_lab='{$idLab}' AND codigo_carrera='{$codigo}';";
+    if(($mysqli->query($sql)) == true)
+    {
+      $answer = '*Carrera ahora no Asignada a Laboratorio.';
     }
     else
     {
